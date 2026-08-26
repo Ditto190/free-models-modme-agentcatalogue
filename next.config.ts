@@ -32,6 +32,16 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        // 静态页面兜底：HTML 内容随部署更新，短时缓存即可
+        source: "/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400",
+          },
+        ],
+      },
     ];
   },
 };
