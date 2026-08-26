@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/page-header";
 import { JsonLd } from "@/components/json-ld";
 import { HomeStats } from "@/components/home-stats";
 import { SITE_URL } from "@/lib/site";
+import type { RelayCard } from "@/lib/types";
 
 export default function Home() {
   const catalog = getCatalog();
@@ -11,6 +12,18 @@ export default function Home() {
   const relayCount = relays.length;
   const modelCount = Object.keys(catalog.models).length;
   const freeRelayCount = relays.filter((r) => r.free_quota.available).length;
+
+  // 列表行只用到少量字段，去掉嵌套 models 可显著减小页面 payload
+  const relayCards: RelayCard[] = relays.map((r) => ({
+    id: r.id,
+    name: r.name,
+    logo: r.logo,
+    free_quota: r.free_quota,
+    pricing: r.pricing,
+    providers: r.providers,
+    model_count: r.model_count,
+    auth: r.auth,
+  }));
 
   const webSite = {
     "@context": "https://schema.org",
@@ -38,7 +51,7 @@ export default function Home() {
       <JsonLd data={itemList} />
       <PageHeader titleKey="nav.providers" descKey="site.tagline" />
       <HomeStats relayCount={relayCount} modelCount={modelCount} freeRelayCount={freeRelayCount} />
-      <RelayList catalog={catalog} />
+      <RelayList relays={relayCards} />
     </main>
   );
 }

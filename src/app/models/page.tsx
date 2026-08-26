@@ -29,7 +29,7 @@ export default function ModelsPage() {
   return (
     <main className="mx-auto max-w-[1600px] px-4 py-8">
       <JsonLd data={itemList} />
-      <ModelList catalog={catalog} />
+      <ModelList models={models} />
     </main>
   );
 }

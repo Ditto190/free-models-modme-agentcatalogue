@@ -5,6 +5,7 @@ import { RelayDetail } from "@/components/relay-detail";
 import { JsonLd } from "@/components/json-ld";
 import { relayOrgLd } from "@/lib/jsonld";
 import { SITE_URL } from "@/lib/site";
+import type { Model } from "@/lib/types";
 
 export function generateStaticParams() {
   return getRelays().map((r) => ({ id: r.id }));
@@ -60,11 +61,18 @@ export default async function RelayPage({ params }: { params: Promise<{ id: stri
     ],
   };
 
+  // 只内联本中转站在售模型的规格，避免全量 catalog 序列化
+  const models: Record<string, Model> = {};
+  for (const mid of Object.keys(relay.models)) {
+    const m = catalog.models[mid];
+    if (m) models[mid] = m;
+  }
+
   return (
     <>
       <JsonLd data={breadcrumb} />
       <JsonLd data={relayOrgLd(relay)} />
-      <RelayDetail relay={relay} catalog={catalog} />
+      <RelayDetail relay={relay} models={models} />
     </>
   );
 }

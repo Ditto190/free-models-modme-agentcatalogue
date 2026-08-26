@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { CheckCircle2, Minus, ArrowLeft, Gift, Database, Building2 } from "lucide-react";
-import type { CatalogJson, FreeQuotaType, Model, ModelRef, Relay } from "@/lib/types";
+import type { FreeQuotaType, Model, ModelRef, Relay } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { CopyButton } from "@/components/copy-button";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { formatTokens } from "@/lib/format";
 import { FREE_VARIANT } from "@/lib/ui";
 import type { DictKey } from "@/lib/i18n";
 
-export function RelayDetail({ relay, catalog }: { relay: Relay; catalog: CatalogJson }) {
+export function RelayDetail({ relay, models }: { relay: Relay; models: Record<string, Model> }) {
   const { t, locale } = useApp();
   const fq = relay.free_quota;
   const fType = fq.type as FreeQuotaType | undefined;
@@ -135,7 +135,7 @@ export function RelayDetail({ relay, catalog }: { relay: Relay; catalog: Catalog
               </thead>
               <tbody className="divide-y divide-border">
                 {Object.entries(relay.models).map(([id, ref]) => {
-                  const m = catalog.models[id];
+                  const m = models[id];
                   return <ModelRow key={id} id={id} refModel={ref} model={m} />;
                 })}
               </tbody>

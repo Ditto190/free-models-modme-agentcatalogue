@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { CatalogJson, FreeQuotaType, Relay } from "@/lib/types";
+import type { FreeQuotaType, RelayCard } from "@/lib/types";
 import { useApp } from "@/components/providers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { SubmitRelayButton } from "@/components/submit-relay-button";
 import type { DictKey } from "@/lib/i18n";
 
 /** 中转站列表行：桌面为表格行，移动端为卡片 */
-function RelayRow({ relay }: { relay: Relay }) {
+function RelayRow({ relay }: { relay: RelayCard }) {
   const { t, locale } = useApp();
   const fq = relay.free_quota;
   const fType = fq.type as FreeQuotaType | undefined;
@@ -107,9 +107,8 @@ function RelayRow({ relay }: { relay: Relay }) {
 }
 
 /** 中转站（供应商）列表 */
-export function RelayList({ catalog }: { catalog: CatalogJson }) {
+export function RelayList({ relays }: { relays: RelayCard[] }) {
   const { t } = useApp();
-  const relays = Object.values(catalog.api);
 
   return (
     <>

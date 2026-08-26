@@ -21,7 +21,7 @@ import {
   AudioLines,
   Video,
 } from "lucide-react";
-import type { CatalogJson, FreeQuotaType, Model } from "@/lib/types";
+import type { FreeQuotaType, Model, RelayBrief } from "@/lib/types";
 import { useApp } from "@/components/providers";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -97,12 +97,9 @@ function specIcon(label: string): React.ReactNode {
   }
 }
 
-export function ModelDetail({ model, catalog }: { model: Model; catalog: CatalogJson }) {
+export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrief[] }) {
   const { t, locale } = useApp();
   const [copied, setCopied] = useState(false);
-  const relays = model.available_on
-    .map((rid) => catalog.api[rid])
-    .filter((r) => !!r);
 
   const copyId = async () => {
     try {

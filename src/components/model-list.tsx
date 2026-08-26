@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Copy, Check, CheckCircle2, Minus, Search, SearchX, X } from "lucide-react";
-import type { CatalogJson, Model } from "@/lib/types";
+import type { Model } from "@/lib/types";
 import { useApp } from "@/components/providers";
 import { formatTokens } from "@/lib/format";
 import { sortByReleaseDate } from "@/lib/sort";
@@ -20,14 +20,11 @@ function matchesQuery(model: Model, q: string): boolean {
 }
 
 /** 模型库列表（支持 URL 查询参数搜索与即时过滤） */
-export function ModelList({ catalog }: { catalog: CatalogJson }) {
+export function ModelList({ models }: { models: Model[] }) {
   const { t } = useApp();
   const query = useQueryParam("q");
 
-  const allModels = useMemo(
-    () => sortByReleaseDate(Object.values(catalog.models)),
-    [catalog],
-  );
+  const allModels = useMemo(() => sortByReleaseDate(models), [models]);
 
   const [copied, setCopied] = useState<string | null>(null);
 

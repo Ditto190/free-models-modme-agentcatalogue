@@ -4,6 +4,7 @@ import { getCatalog } from "@/lib/data";
 import { ModelDetail } from "@/components/model-detail";
 import { JsonLd } from "@/components/json-ld";
 import { SITE_URL } from "@/lib/site";
+import type { RelayBrief } from "@/lib/types";
 
 export function generateStaticParams() {
   return Object.keys(getCatalog().models).map((id) => ({ id: id.split("/") }));
@@ -51,10 +52,16 @@ export default async function ModelPage({ params }: { params: Promise<{ id: stri
     ],
   };
 
+  // 只内联可免费使用中转站的精简摘要，避免全量 catalog 序列化
+  const relays: RelayBrief[] = model.available_on
+    .map((rid) => catalog.api[rid])
+    .filter((r) => !!r)
+    .map(({ id, name, logo, free_quota }) => ({ id, name, logo, free_quota }));
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
       <JsonLd data={breadcrumb} />
-      <ModelDetail model={model} catalog={catalog} />
+      <ModelDetail model={model} relays={relays} />
     </main>
   );
 }
