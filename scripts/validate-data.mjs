@@ -170,7 +170,7 @@ for (const model of models) {
     );
   }
   if (model.release_date != null) {
-    check(/^\d{4}-\d{2}-\d{2}$/.test(model.release_date), `${model.id}: release_date 应形如 "YYYY-MM-DD"`);
+    check(/^\d{4}-\d{2}(-\d{2})?$/.test(model.release_date), `${model.id}: release_date 应形如 "YYYY-MM" 或 "YYYY-MM-DD"`);
   }
   if (model.context != null) {
     check(Number.isFinite(model.context) && model.context > 0, `${model.id}: context 必须是正数`);
