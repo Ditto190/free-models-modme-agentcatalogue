@@ -8,6 +8,12 @@ import { useState } from "react";
 import { hashHue, initial } from "@/lib/visual";
 import { PROVIDER_LOGOS } from "./provider-logos";
 
+// Simple Icons 的 path 基于 24x24 视口，本项目统一渲染到 40x40。
+const LOGO_SCALE: Record<string, number> = {
+  qwen: 40 / 24,
+  moonshot: 40 / 24,
+};
+
 // 站点 Logo：路由/中转标记（两个输入节点汇向一个输出节点），
 // 用品牌色 --brand 填充（与 favicon 一致），不随主题反色。
 export function Logo({ className }: { className?: string }) {
@@ -146,7 +152,13 @@ export function ProviderLogo({
       className={className}
       style={{ flexShrink: 0, width: size, height: size }}
     >
-      <path d={d} />
+      {LOGO_SCALE[id] ? (
+        <g transform={`scale(${LOGO_SCALE[id]})`}>
+          <path d={d} />
+        </g>
+      ) : (
+        <path d={d} />
+      )}
     </svg>
   );
 }
