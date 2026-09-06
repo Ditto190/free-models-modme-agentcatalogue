@@ -2,9 +2,28 @@ import { ImageResponse } from "next/og";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "中转站免费额度库 · Relay Free-Quota DB";
+export const alt = "Relay Free-Quota DB";
 
-export default function OpenGraphImage() {
+const COPY = {
+  zh: {
+    title: "中转站免费额度库",
+    subtitle: "Relay Free-Quota DB · 只收录提供免费额度的 LLM 中转站",
+    badges: ["OpenAI 兼容", "数据 JSON 开放", "可 curl 取用"],
+  },
+  en: {
+    title: "Relay Free-Quota DB",
+    subtitle: "A directory of LLM relays and gateways with a free tier",
+    badges: ["OpenAI-compatible", "Open JSON data", "curl-ready"],
+  },
+};
+
+export default async function OpenGraphImage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+  const copy = lang === "en" ? COPY.en : COPY.zh;
   return new ImageResponse(
     (
       <div
@@ -34,10 +53,10 @@ export default function OpenGraphImage() {
           </g>
         </svg>
         <div style={{ fontSize: 64, fontWeight: 700, marginTop: 32, letterSpacing: 2 }}>
-          中转站免费额度库
+          {copy.title}
         </div>
         <div style={{ fontSize: 30, opacity: 0.9, marginTop: 12 }}>
-          Relay Free-Quota DB · 只收录提供免费额度的 LLM 中转站
+          {copy.subtitle}
         </div>
         <div
           style={{
@@ -48,7 +67,7 @@ export default function OpenGraphImage() {
             gap: 16,
           }}
         >
-          <span>OpenAI 兼容</span>·<span>数据 JSON 开放</span>·<span>可 curl 取用</span>
+          <span>{copy.badges[0]}</span>·<span>{copy.badges[1]}</span>·<span>{copy.badges[2]}</span>
         </div>
       </div>
     ),
