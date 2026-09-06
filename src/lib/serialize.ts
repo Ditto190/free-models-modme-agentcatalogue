@@ -25,7 +25,25 @@ export function serializeApi(catalog: CatalogJson): ApiJson {
     const models: Record<string, unknown> = {};
     for (const [mid, ref] of Object.entries(r.models)) {
       const m = catalog.models[mid];
-      models[mid] = m ? toCompatModel(m) : ref;
+      if (!m) {
+        models[mid] = ref;
+        continue;
+      }
+      const serialized: Record<string, unknown> = { ...toCompatModel(m) };
+      // relay 专属价格/备注不能丢：api.json 是下游取价的权威来源
+      if (ref.cost) {
+        serialized.cost = {
+          input: ref.cost.input ?? m.price?.input,
+          output: ref.cost.output ?? m.price?.output,
+          cache_read: ref.cost.cache_read,
+        };
+        serialized.price = {
+          input: ref.cost.input ?? m.price?.input,
+          output: ref.cost.output ?? m.price?.output,
+        };
+      }
+      if (ref.notes) serialized.notes = ref.notes;
+      models[mid] = serialized;
     }
     out[id] = {
       ...r,
