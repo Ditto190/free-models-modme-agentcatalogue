@@ -12,6 +12,7 @@ import { PROVIDER_LOGOS } from "./provider-logos";
 const LOGO_SCALE: Record<string, number> = {
   qwen: 40 / 24,
   moonshot: 40 / 24,
+  zhipu: 40 / 24,
 };
 
 // 站点 Logo：路由/中转标记（两个输入节点汇向一个输出节点），
