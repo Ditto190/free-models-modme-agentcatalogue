@@ -42,7 +42,7 @@ export function RelayDetail({ relay, models }: { relay: Relay; models: Record<st
               )}
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              {modelCount} {t("models.title")} · {relay.providers.length} {t("card.providers")}
+              {t("card.models", { n: modelCount })} · {relay.providers.length} {t("card.providers")}
             </p>
           </div>
         </div>

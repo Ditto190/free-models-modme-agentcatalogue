@@ -39,7 +39,7 @@ function RelayRow({ relay }: { relay: RelayCard }) {
             {relay.name}
           </Link>
           <span className="hidden text-xs text-muted-foreground md:inline">
-            {relay.model_count} {t("models.title")}
+            {t("card.models", { n: relay.model_count })}
           </span>
         </div>
       </div>
@@ -273,7 +273,7 @@ export function RelayList({ relays }: { relays: RelayCard[] }) {
         <span>{t("card.free")}</span>
         <span>{t("providers.notes")}</span>
         <span>{t("card.providers")}</span>
-        <span>{t("models.title")}</span>
+        <span>{t("card.modelsCount")}</span>
         <span className="text-right">{t("card.viewDetail")}</span>
       </div>
       <ul className="divide-y divide-border">

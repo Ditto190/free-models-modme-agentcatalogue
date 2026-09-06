@@ -78,6 +78,7 @@ function brandColors(seed: string): [string, string] {
 
 function LogoBox({
   id,
+  label,
   ch,
   size,
   className,
@@ -85,6 +86,7 @@ function LogoBox({
   fontSize,
 }: {
   id: string;
+  label: string;
   ch: string;
   size: number;
   className?: string;
@@ -99,7 +101,7 @@ function LogoBox({
       viewBox="0 0 40 40"
       className={className}
       role="img"
-      aria-label={id}
+      aria-label={label}
       style={{ flexShrink: 0 }}
     >
       <defs>
@@ -137,7 +139,7 @@ export function ProviderLogo({
   const d = PROVIDER_LOGOS[id];
   if (!d) {
     return (
-      <LogoBox id={id} ch={initial(id)} size={size} className={className} radius={9} fontSize={19} />
+      <LogoBox id={id} label={id} ch={initial(id)} size={size} className={className} radius={9} fontSize={19} />
     );
   }
 
@@ -199,6 +201,7 @@ export function RelayLogo({
   return (
     <LogoBox
       id={id}
+      label={name}
       ch={initial(name)}
       size={size}
       className={className}
