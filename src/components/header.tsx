@@ -57,7 +57,13 @@ export function Header() {
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
     const term = q.trim();
-    router.push(localePath(locale, term ? `/models?q=${encodeURIComponent(term)}` : "/models"));
+    const current = stripLocalePath(pathname);
+    const modelScope =
+      current === "/models" ||
+      current.startsWith("/models/") ||
+      current.startsWith("/labs/");
+    const target = modelScope ? "/models" : "/";
+    router.push(localePath(locale, term ? `${target}?q=${encodeURIComponent(term)}` : target));
     setMobileOpen(false);
   };
 
