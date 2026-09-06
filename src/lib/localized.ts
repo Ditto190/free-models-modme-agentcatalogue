@@ -135,6 +135,51 @@ const MODEL_DESCRIPTION_EN: Record<string, string> = {
   "meta/llama-3.1-8b": "Lightweight open model for edge and high-frequency scenarios.",
   "mistral/mistral-large": "Mistral's flagship closed-source model.",
   "minimax/abab6.5": "MiniMax general-purpose large model.",
+  "openai/gpt-5.1": "OpenAI's next-generation flagship model optimized for agent workflows.",
+  "openai/gpt-5.2-codex": "A Codex-series model for software engineering, complex coding and repository-scale tasks.",
+  "openai/gpt-5.4": "OpenAI flagship with stronger long-context and complex reasoning.",
+  "openai/gpt-5.6-sol": "OpenAI's newest flagship reasoning model for complex agent scenarios.",
+  "anthropic/claude-sonnet-4.6": "Anthropic's balanced model with strong coding and long-task performance.",
+  "anthropic/claude-opus-4.8": "Anthropic's high-end long-context reasoning model.",
+  "anthropic/claude-opus-5": "Anthropic's newest flagship model.",
+  "deepseek/deepseek-v3.2": "DeepSeek's iteration balancing reasoning capability and cost.",
+  "deepseek/deepseek-v4-flash": "Fast, lightweight DeepSeek V4 model with very long context.",
+  "deepseek/deepseek-v4-pro": "DeepSeek V4 flagship reasoning model.",
+  "google/gemini-3.1-pro-preview": "Google's multimodal flagship model preview.",
+  "zhipu/glm-4.7": "Zhipu's next open GLM generation with strong agent and tool-calling ability.",
+  "zhipu/glm-5": "Zhipu GLM's next-generation flagship.",
+  "zhipu/glm-5.2": "Zhipu GLM's newest flagship with very long context.",
+  "qwen/qwen3.6-plus": "Qwen's next-generation flagship with multimodal and long-context support.",
+  "moonshot/kimi-k2.5": "Moonshot's open agent model.",
+  "moonshot/kimi-k2.6": "Moonshot's latest open agent model.",
+  "minimax/MiniMax-M3": "MiniMax's next open flagship with very long context.",
+  "xai/grok-4.5": "xAI's next multimodal flagship model.",
+  "xai/grok-4.6": "xAI's latest multimodal flagship model.",
+  "meta/llama-4-maverick-17b-instruct": "Meta's open multimodal MoE model.",
+};
+
+const MODEL_DESCRIPTION_ZH: Record<string, string> = {
+  "openai/gpt-5.1": "OpenAI 新一代旗舰模型，面向 agent 工作流优化。",
+  "openai/gpt-5.2-codex": "面向软件工程的 Codex 系列模型，擅长复杂编码与仓库级任务。",
+  "openai/gpt-5.4": "OpenAI 旗舰模型，长上下文与复杂推理能力增强。",
+  "openai/gpt-5.6-sol": "OpenAI 新一代旗舰推理模型，面向复杂 agent 场景。",
+  "anthropic/claude-sonnet-4.6": "Anthropic 均衡型模型，编码与长任务表现强劲。",
+  "anthropic/claude-opus-4.8": "Anthropic 高端长上下文推理模型。",
+  "anthropic/claude-opus-5": "Anthropic 新一代旗舰模型。",
+  "deepseek/deepseek-v3.2": "DeepSeek 迭代版本，兼顾推理能力与使用成本。",
+  "deepseek/deepseek-v4-flash": "DeepSeek V4 轻量高速版，支持超长上下文。",
+  "deepseek/deepseek-v4-pro": "DeepSeek V4 旗舰推理模型。",
+  "google/gemini-3.1-pro-preview": "Google 多模态旗舰模型预览版。",
+  "zhipu/glm-4.7": "智谱 GLM 新一代开源模型，agent 与工具调用能力突出。",
+  "zhipu/glm-5": "智谱 GLM 下一代旗舰模型。",
+  "zhipu/glm-5.2": "智谱 GLM 新一代旗舰模型，支持超长上下文。",
+  "qwen/qwen3.6-plus": "通义千问新一代旗舰模型，多模态与长上下文。",
+  "moonshot/kimi-k2.5": "月之暗面开源 agent 模型。",
+  "moonshot/kimi-k2.6": "月之暗面最新开源 agent 模型。",
+  "minimax/MiniMax-M3": "MiniMax 新一代开源旗舰模型，支持超长上下文。",
+  "xai/grok-4.5": "xAI 新一代多模态旗舰模型。",
+  "xai/grok-4.6": "xAI 最新多模态旗舰模型。",
+  "meta/llama-4-maverick-17b-instruct": "Meta 开源多模态 MoE 模型。",
 };
 
 export interface LocalizedQuotaTexts {
@@ -169,6 +214,7 @@ export function localizedQuotaTexts(
 }
 
 export function localizedModelDescription(model: Model, locale: Locale): string | undefined {
-  if (locale === "en") return MODEL_DESCRIPTION_EN[model.id] ?? model.description;
-  return model.description;
+  const zh = MODEL_DESCRIPTION_ZH[model.id] ?? model.description;
+  if (locale === "en") return MODEL_DESCRIPTION_EN[model.id] ?? zh;
+  return zh;
 }
