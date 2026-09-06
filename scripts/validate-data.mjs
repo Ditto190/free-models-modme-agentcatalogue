@@ -87,6 +87,10 @@ for (const id of findDuplicates(modelIds)) {
 }
 
 const FREE_TYPES = new Set(["credit", "token", "daily_checkin", "free_models", "unlimited"]);
+const AUTH_TYPES = new Set(["api_key", "oauth", "none"]);
+const PRICING_MODELS = new Set(["no_markup", "retail", "markup", "free"]);
+const RELAY_STATUSES = new Set(["operational", "degraded", "down"]);
+const REGIONS = new Set(["global", "cn"]);
 
 for (const relay of relays) {
   const tag = relay.id || relay.name || "(无 id 的中转站)";
@@ -114,6 +118,43 @@ for (const relay of relays) {
       }
     }
   }
+
+  if (relay.free_quota?.amount_usd != null) {
+    check(
+      Number.isFinite(relay.free_quota.amount_usd) && relay.free_quota.amount_usd >= 0,
+      `${tag}: free_quota.amount_usd 不是非负数字`,
+    );
+  }
+
+  if (relay.auth) {
+    check(AUTH_TYPES.has(relay.auth.type), `${tag}: auth.type "${relay.auth.type}" 不合法`);
+    check(
+      Array.isArray(relay.auth.env) && relay.auth.env.every((v) => typeof v === "string" && v.length > 0),
+      `${tag}: auth.env 必须是非空字符串数组`,
+    );
+    check(
+      typeof relay.auth.signup === "string" && /^https?:\/\//.test(relay.auth.signup),
+      `${tag}: auth.signup 必须是以 http(s):// 开头的字符串`,
+    );
+    if (Array.isArray(relay.env) && Array.isArray(relay.auth.env)) {
+      check(
+        relay.env.length === relay.auth.env.length &&
+          relay.env.every((value, index) => value === relay.auth.env[index]),
+        `${tag}: 顶层 env 与 auth.env 不一致（请只保留一个权威来源）`,
+      );
+    }
+  }
+
+  check(PRICING_MODELS.has(relay.pricing?.model), `${tag}: pricing.model "${relay.pricing?.model}" 不合法`);
+  check(RELAY_STATUSES.has(relay.status), `${tag}: status "${relay.status}" 不合法`);
+  check(
+    Array.isArray(relay.region) && relay.region.length > 0 && relay.region.every((r) => REGIONS.has(r)),
+    `${tag}: region 必须是 ["global" | "cn"] 的非空数组`,
+  );
+  check(
+    typeof relay.updated_at === "string" && /^\d{4}-\d{2}-\d{2}$/.test(relay.updated_at),
+    `${tag}: updated_at 应形如 YYYY-MM-DD`,
+  );
 
   // model_count 由构建期自动计算，源数据中应保持 0，禁止手填
   check(relay.model_count === 0, `${tag}: model_count 由 src/lib/data.ts 自动计算，请保持 0`);
