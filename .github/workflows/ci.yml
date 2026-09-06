@@ -15,6 +15,8 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - name: Validate data consistency
+        run: npm run validate:data
       - name: Build (SSG + route handlers)
         run: npm run build
       - name: Verify static route endpoints are prerendered

@@ -1,0 +1,181 @@
+#!/usr/bin/env node
+// 数据一致性校验：在提交前 / CI 中运行 `npm run validate:data`。
+// 通过 TypeScript transpile 直接读取 src/data/*.ts 的真实导出，
+// 而不是用正则猜测数据，避免“构建通过但数据引用悬空”的问题。
+
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(currentDir, "..");
+const require = createRequire(import.meta.url);
+const ts = require("typescript");
+
+const errors = [];
+const warnings = [];
+let checked = 0;
+
+function error(msg) {
+  errors.push(msg);
+}
+
+function warn(msg) {
+  warnings.push(msg);
+}
+
+function check(condition, msg) {
+  checked += 1;
+  if (!condition) error(msg);
+}
+
+function loadDataModule(file) {
+  const abs = path.join(root, file);
+  const source = fs.readFileSync(abs, "utf8");
+  const { outputText } = ts.transpileModule(source, {
+    fileName: file,
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+      esModuleInterop: true,
+    },
+  });
+
+  const mod = { exports: {} };
+  new Function("exports", "module", "require", "__filename", "__dirname", outputText)(
+    mod.exports,
+    mod,
+    require,
+    abs,
+    path.dirname(abs),
+  );
+  return mod.exports;
+}
+
+function findDuplicates(items) {
+  const seen = new Set();
+  const duplicates = new Set();
+  for (const item of items) {
+    if (seen.has(item)) duplicates.add(item);
+    seen.add(item);
+  }
+  return [...duplicates];
+}
+
+const { relays } = loadDataModule("src/data/relays.ts");
+const { models } = loadDataModule("src/data/models.ts");
+
+check(Array.isArray(relays) && relays.length > 0, "src/data/relays.ts 未导出非空 relays 数组");
+check(Array.isArray(models), "src/data/models.ts 未导出 models 数组");
+
+if (!Array.isArray(relays) || !Array.isArray(models)) {
+  for (const message of errors) console.error(`✖ ${message}`);
+  process.exit(1);
+}
+
+const relayIds = relays.map((r) => r.id);
+const modelIds = models.map((m) => m.id);
+const modelById = new Map(models.map((m) => [m.id, m]));
+const modelProviders = new Set(models.map((m) => m.provider));
+
+for (const id of findDuplicates(relayIds)) {
+  error(`relay id 重复：${id}`);
+}
+for (const id of findDuplicates(modelIds)) {
+  error(`model id 重复：${id}`);
+}
+
+const FREE_TYPES = new Set(["credit", "token", "daily_checkin", "free_models", "unlimited"]);
+
+for (const relay of relays) {
+  const tag = relay.id || relay.name || "(无 id 的中转站)";
+  check(typeof relay.id === "string" && relay.id.trim().length > 0, `${tag}: 缺少 id`);
+  check(typeof relay.name === "string" && relay.name.trim().length > 0, `${tag}: 缺少 name`);
+  check(typeof relay.url === "string" && /^https?:\/\//.test(relay.url), `${tag}: url 必须是以 http(s):// 开头的字符串`);
+  check(typeof relay.api === "string" && relay.api.trim().length > 0, `${tag}: 缺少 api base`);
+  check(typeof relay.openai_compatible === "boolean", `${tag}: openai_compatible 必须是布尔值`);
+
+  // 本站收录标准：只有提供免费档的服务才能入库
+  check(relay.free_quota?.available === true, `${tag}: free_quota.available 必须为 true（本站只收录有免费额度的中转站）`);
+  check(
+    !relay.free_quota?.type || FREE_TYPES.has(relay.free_quota.type),
+    `${tag}: free_quota.type "${relay.free_quota?.type}" 不在 FreeQuotaType 内`,
+  );
+
+  // model_count 由构建期自动计算，源数据中应保持 0，禁止手填
+  check(relay.model_count === 0, `${tag}: model_count 由 src/lib/data.ts 自动计算，请保持 0`);
+
+  // providers 必须能在模型目录中找到对应规格，否则 /labs/{provider} 会 404
+  check(Array.isArray(relay.providers), `${tag}: providers 必须是数组`);
+  if (Array.isArray(relay.providers)) {
+    const providerDupes = findDuplicates(relay.providers);
+    check(providerDupes.length === 0, `${tag}: providers 存在重复项：${providerDupes.join(", ")}`);
+    for (const provider of relay.providers) {
+      check(
+        modelProviders.has(provider),
+        `${tag}: providers 中的 "${provider}" 没有对应 models.ts 模型规格（/labs/${provider} 会 404）。请先补模型规格，否则移除该值。`,
+      );
+    }
+  }
+
+  check(relay.models && typeof relay.models === "object", `${tag}: models 必须是对象`);
+  if (relay.models && typeof relay.models === "object") {
+    for (const [key, ref] of Object.entries(relay.models)) {
+      check(modelById.has(key), `${tag}: 模型引用 "${key}" 未收录于 models.ts`);
+      check(ref?.id === key, `${tag}: models 的键 "${key}" 与引用 id "${ref?.id}" 不一致`);
+      check(typeof ref?.name === "string" && ref.name.trim().length > 0, `${tag}: 模型引用 "${key}" 缺少 name`);
+    }
+  }
+
+  // 免费额度若声明了覆盖模型，最好指向模型目录中的真实模型；
+  // 但中转站私有模型（如 anyrouter/free）可以不在全局目录中，只给出警告。
+  if (Array.isArray(relay.free_quota?.models)) {
+    for (const modelId of relay.free_quota.models) {
+      if (!modelById.has(modelId)) {
+        warn(`${tag}: free_quota.models 中的 "${modelId}" 未收录于 models.ts（若是中转站私有模型可忽略）`);
+      }
+    }
+  }
+
+  // logo 必须为本地资源；空字符串表示使用默认 monogram
+  if (relay.logo) {
+    check(!/^https?:\/\//.test(relay.logo), `${tag}: logo 必须是本地路径，禁止外链`);
+    const logoFile = path.join(root, "public", relay.logo.replace(/^\/+/, ""));
+    check(fs.existsSync(logoFile), `${tag}: logo 文件不存在：${relay.logo}`);
+  }
+}
+
+for (const model of models) {
+  const parts = typeof model.id === "string" ? model.id.split("/") : [];
+  check(parts.length >= 2, `${model.id || "(无 id 的模型)"}: model id 必须形如 "provider/model"`);
+  check(model.provider === parts[0], `${model.id}: provider 字段 "${model.provider}" 与 id 前缀 "${parts[0]}" 不一致`);
+  check(Array.isArray(model.available_on), `${model.id}: available_on 缺失或不是数组`);
+  if (Array.isArray(model.available_on)) {
+    check(
+      model.available_on.length === 0,
+      `${model.id}: available_on 由构建期 src/lib/data.ts 自动计算，源数据中请保持空数组`,
+    );
+  }
+  if (model.release_date != null) {
+    check(/^\d{4}-\d{2}-\d{2}$/.test(model.release_date), `${model.id}: release_date 应形如 "YYYY-MM-DD"`);
+  }
+  if (model.context != null) {
+    check(Number.isFinite(model.context) && model.context > 0, `${model.id}: context 必须是正数`);
+  }
+  if (model.max_output != null) {
+    check(Number.isFinite(model.max_output) && model.max_output > 0, `${model.id}: max_output 必须是正数`);
+  }
+}
+
+console.log(
+  `\n数据校验完成：${relays.length} 家中转站 / ${models.length} 个模型，共 ${checked} 项检查，${errors.length} 个错误，${warnings.length} 个警告。`,
+);
+
+if (errors.length > 0) {
+  for (const message of errors) console.error(`✖ ${message}`);
+  process.exit(1);
+}
+
+for (const message of warnings) console.warn(`⚠ ${message}`);
+console.log("✓ 全部通过");

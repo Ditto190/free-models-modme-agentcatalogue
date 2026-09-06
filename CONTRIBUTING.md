@@ -57,16 +57,17 @@ CI 会自动校验数据与构建。
 ```
 
 2. 若模型不在 `models.ts` 中，先在 `models.ts` 补充模型规格。
-3. 运行 `npm run build` 验证（数据端点由路由静态生成，无需手动生成文件），确认无误后提交 PR。
+3. 运行 `npm run validate:data` 校验数据一致性（id 唯一、模型引用、providers 对应 /labs 页面、logo 文件等），再运行 `npm run build` 验证（数据端点由路由静态生成，无需手动生成文件），确认无误后提交 PR。
 
 ## 本地开发
 
 ```bash
 npm install
+npm run validate:data  # 数据一致性校验
 npm run dev        # 启动开发服务器，访问 http://localhost:3000
 npm run build      # 生产构建（类型检查 + 静态页 + 数据端点）
 ```
 
 ## 校验
 
-CI 会自动执行 `npm run build`（包含类型检查）。PR 需通过 CI。
+CI 会自动执行 `npm run validate:data` 与 `npm run build`（包含类型检查）。PR 需通过 CI。
