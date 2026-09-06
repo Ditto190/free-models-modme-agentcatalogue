@@ -386,7 +386,7 @@ export function ModelList({ models }: { models: Model[] }) {
                   {/* 可免费使用的中转站 */}
                   <div className="flex flex-wrap justify-start gap-1 md:justify-end">
                     {m.available_on.length === 0 ? (
-                      <span className="text-xs text-muted-foreground">—</span>
+                      <span className="text-xs text-muted-foreground/70">{t("models.noChannels")}</span>
                     ) : (
                       <>
                         {shown.map((rid) => (

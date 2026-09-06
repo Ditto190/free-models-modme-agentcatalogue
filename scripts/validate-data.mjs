@@ -180,6 +180,18 @@ for (const relay of relays) {
   }
 }
 
+// 模型目录的定位是“被中转站提供的规格”：没有 relay 引用的条目会
+// 出现在模型库但与免费渠道脱节，提示维护者补关联或移出。
+const relayLinkedModels = new Set();
+for (const relay of relays) {
+  for (const modelId of Object.keys(relay.models ?? {})) relayLinkedModels.add(modelId);
+}
+for (const model of models) {
+  if (!relayLinkedModels.has(model.id)) {
+    warn(`${model.id}: 未出现在任何中转站的 models 中（若计划收录请补关联，否则可移出目录）`);
+  }
+}
+
 for (const model of models) {
   const parts = typeof model.id === "string" ? model.id.split("/") : [];
   check(parts.length >= 2, `${model.id || "(无 id 的模型)"}: model id 必须形如 "provider/model"`);

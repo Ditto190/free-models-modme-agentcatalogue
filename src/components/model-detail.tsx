@@ -245,7 +245,7 @@ export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrie
           <span className="text-sm font-normal text-muted-foreground">({relays.length})</span>
         </h2>
         {relays.length === 0 ? (
-          <p className="text-sm text-muted-foreground">—</p>
+          <p className="text-sm text-muted-foreground">{t("models.noChannelsDetail")}</p>
         ) : (
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {relays.map((r) => {
