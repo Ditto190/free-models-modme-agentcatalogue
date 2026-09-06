@@ -101,6 +101,8 @@ function specIcon(label: string): React.ReactNode {
 export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrief[] }) {
   const { t, locale } = useApp();
   const [copied, setCopied] = useState(false);
+  const flagText = (value?: boolean) =>
+    value === undefined ? t("detail.unknown") : t(value ? "detail.yes" : "detail.no");
 
   const copyId = async () => {
     try {
@@ -207,22 +209,28 @@ export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrie
           />
           <Spec
             label={t("models.reasoning")}
-            value={t(model.reasoning ? "detail.yes" : "detail.no")}
+            value={flagText(model.reasoning)}
             yes={model.reasoning}
           />
           <Spec
             label={t("models.toolCall")}
-            value={t(model.tool_call ? "detail.yes" : "detail.no")}
+            value={flagText(model.tool_call)}
             yes={model.tool_call}
           />
           <Spec
             label={t("models.structured")}
-            value={t(model.structured_output ? "detail.yes" : "detail.no")}
+            value={flagText(model.structured_output)}
             yes={model.structured_output}
           />
           <Spec
             label={t("models.weights")}
-            value={model.open_weights ? t("models.open") : t("models.closed")}
+            value={
+              model.open_weights === undefined
+                ? t("detail.unknown")
+                : model.open_weights
+                  ? t("models.open")
+                  : t("models.closed")
+            }
             yes={model.open_weights}
           />
           <Spec label={t("models.released")} value={model.release_date ?? "—"} />

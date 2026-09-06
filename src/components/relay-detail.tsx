@@ -5,13 +5,11 @@ import {
   ArrowLeft,
   BookOpen,
   Building2,
-  CheckCircle2,
   Clock,
   Database,
   Gift,
   Globe,
   KeyRound,
-  Minus,
   Plug,
   Server,
   ShieldCheck,
@@ -28,6 +26,7 @@ import { formatTokens } from "@/lib/format";
 import { FREE_VARIANT } from "@/lib/ui";
 import type { DictKey } from "@/lib/i18n";
 import { localePath } from "@/lib/locale";
+import { FeatureState } from "@/components/feature-state";
 
 function OverviewItem({
   icon,
@@ -345,25 +344,13 @@ function ModelRow({
         {price ? `$${price.input?.toFixed(2)} / $${price.output?.toFixed(2)}` : "—"}
       </td>
       <td className="px-3 py-2 sm:px-4 sm:py-2.5">
-        {model?.reasoning ? (
-          <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
-        ) : (
-          <Minus className="h-4 w-4 text-muted-foreground/40" />
-        )}
+        <FeatureState value={model?.reasoning} />
       </td>
       <td className="px-3 py-2 sm:px-4 sm:py-2.5">
-        {model?.tool_call ? (
-          <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
-        ) : (
-          <Minus className="h-4 w-4 text-muted-foreground/40" />
-        )}
+        <FeatureState value={model?.tool_call} />
       </td>
       <td className="px-3 py-2 sm:px-4 sm:py-2.5">
-        {model?.structured_output ? (
-          <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
-        ) : (
-          <Minus className="h-4 w-4 text-muted-foreground/40" />
-        )}
+        <FeatureState value={model?.structured_output} />
       </td>
       <td className="px-4 py-2.5 text-xs text-muted-foreground">
         {t("detail.availableOnCount", { n: model?.available_on.length ?? 0 })}

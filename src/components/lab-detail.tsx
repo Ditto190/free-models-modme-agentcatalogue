@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Copy, Check, CheckCircle2, Minus, Cpu } from "lucide-react";
+import { ArrowLeft, Copy, Check, Cpu } from "lucide-react";
 import type { Model } from "@/lib/types";
 import { useApp } from "@/components/providers";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { ProviderLogo } from "@/components/logo";
 import { formatTokens } from "@/lib/format";
 import { sortByReleaseDate } from "@/lib/sort";
 import { localePath } from "@/lib/locale";
+import { FeatureState } from "@/components/feature-state";
 
 /** 厂商（lab）独立页 */
 export function LabDetail({
@@ -113,21 +114,21 @@ export function LabDetail({
                     {formatTokens(m.max_output)}
                   </div>
                   <div className="hidden xl:block">
-                    {m.reasoning ? (
-                      <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
-                    ) : (
-                      <Minus className="h-4 w-4 text-muted-foreground/40" />
-                    )}
+                    <FeatureState value={m.reasoning} />
                   </div>
                   <div className="hidden xl:block">
-                    {m.tool_call ? (
-                      <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
-                    ) : (
-                      <Minus className="h-4 w-4 text-muted-foreground/40" />
-                    )}
+                    <FeatureState value={m.tool_call} />
                   </div>
                   <div className="hidden xl:block">
-                    {m.open_weights ? (
+                    {m.open_weights === undefined ? (
+                      <span
+                        aria-label={t("detail.unknown")}
+                        title={t("detail.unknown")}
+                        className="text-xs text-muted-foreground/70"
+                      >
+                        ?
+                      </span>
+                    ) : m.open_weights ? (
                       <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-500/25 dark:text-emerald-400">
                         {t("models.open")}
                       </span>
