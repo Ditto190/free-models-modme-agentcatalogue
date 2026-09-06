@@ -27,6 +27,7 @@ import { FREE_VARIANT } from "@/lib/ui";
 import type { DictKey } from "@/lib/i18n";
 import { localePath } from "@/lib/locale";
 import { FeatureState } from "@/components/feature-state";
+import { localizedQuotaTexts } from "@/lib/localized";
 
 function OverviewItem({
   icon,
@@ -55,6 +56,7 @@ export function RelayDetail({ relay, models }: { relay: Relay; models: Record<st
   const fq = relay.free_quota;
   const fType = fq.type as FreeQuotaType | undefined;
   const modelCount = Object.keys(relay.models).length;
+  const quotaTexts = localizedQuotaTexts(relay, locale);
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-6">
@@ -161,7 +163,7 @@ export function RelayDetail({ relay, models }: { relay: Relay; models: Record<st
           <OverviewItem icon={<Wallet className="h-3.5 w-3.5" />} label={t("detail.pricing")}>
             <Badge variant="secondary">{t(`pricing.${relay.pricing.model}` as DictKey)}</Badge>
             {relay.pricing.notes && (
-              <span className="text-xs text-muted-foreground">{relay.pricing.notes}</span>
+              <span className="text-xs text-muted-foreground">{quotaTexts.pricingNotes}</span>
             )}
           </OverviewItem>
 
@@ -226,11 +228,11 @@ export function RelayDetail({ relay, models }: { relay: Relay; models: Record<st
         >
           {fq.available ? (
             <div className="space-y-2">
-              <div className="text-2xl font-bold text-foreground">{fq.amount}</div>
-              {fq.notes && <p className="text-sm text-muted-foreground">{fq.notes}</p>}
-              {fq.parts && fq.parts.length > 0 && (
+              <div className="text-2xl font-bold text-foreground">{quotaTexts.amount}</div>
+              {quotaTexts.notes && <p className="text-sm text-muted-foreground">{quotaTexts.notes}</p>}
+              {quotaTexts.parts.length > 0 && (
                 <div className="grid gap-2 pt-2 sm:grid-cols-2">
-                  {fq.parts.map((part, index) => (
+                  {quotaTexts.parts.map((part, index) => (
                     <div
                       key={`${part.type}-${index}`}
                       className="rounded-xl border border-border/60 bg-card/70 p-3"

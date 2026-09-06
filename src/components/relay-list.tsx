@@ -14,6 +14,7 @@ import { useQueryParam, setQueryParam } from "@/lib/url";
 import { SubmitRelayButton } from "@/components/submit-relay-button";
 import type { DictKey } from "@/lib/i18n";
 import { localePath } from "@/lib/locale";
+import { localizedQuotaTexts } from "@/lib/localized";
 
 const QUOTA_TYPES: FreeQuotaType[] = ["credit", "token", "daily_checkin", "free_models", "unlimited"];
 
@@ -33,7 +34,8 @@ function RelayRow({ relay }: { relay: RelayCard }) {
   const fType = fq.type as FreeQuotaType | undefined;
   const providers = relay.providers.slice(0, 3);
   const extra = relay.providers.length - providers.length;
-  const note = fq.notes ?? relay.pricing.notes;
+  const quotaTexts = localizedQuotaTexts(relay, locale);
+  const note = quotaTexts.notes ?? quotaTexts.pricingNotes;
 
   return (
     <li className="group transition-colors hover:bg-accent/40 md:grid md:grid-cols-[1.2fr_1.3fr_1.5fr_1fr_0.6fr_1fr] md:items-center md:gap-4">
@@ -70,7 +72,7 @@ function RelayRow({ relay }: { relay: RelayCard }) {
             </Badge>
           )}
           <div className="text-sm font-semibold leading-snug text-foreground">
-            {fq.amount ?? t("card.viewDetail")}
+            {quotaTexts.amount ?? t("card.viewDetail")}
           </div>
         </div>
       </div>

@@ -31,6 +31,7 @@ import { formatTokens } from "@/lib/format";
 import { FREE_VARIANT } from "@/lib/ui";
 import type { DictKey } from "@/lib/i18n";
 import { localePath } from "@/lib/locale";
+import { localizedModelDescription, localizedQuotaTexts } from "@/lib/localized";
 
 function fmtPrice(n?: number): string {
   return n === undefined ? "?" : n.toFixed(2);
@@ -102,6 +103,7 @@ function specIcon(label: string): React.ReactNode {
 export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrief[] }) {
   const { t, locale } = useApp();
   const [copied, setCopied] = useState(false);
+  const description = localizedModelDescription(model, locale);
   const flagText = (value?: boolean) =>
     value === undefined ? t("detail.unknown") : t(value ? "detail.yes" : "detail.no");
 
@@ -162,9 +164,9 @@ export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrie
               </span>
             )}
           </div>
-          {model.description && (
+          {description && (
             <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
-              {model.description}
+              {description}
             </p>
           )}
         </div>
@@ -253,6 +255,7 @@ export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrie
             {relays.map((r) => {
               const fq = r.free_quota;
               const fType = fq.type as FreeQuotaType | undefined;
+              const quotaTexts = localizedQuotaTexts(r, locale);
               return (
                 <li key={r.id}>
                   <Link
@@ -266,8 +269,8 @@ export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrie
                         <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
                       </span>
                       <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                        {fq.available && fq.amount
-                          ? fq.amount
+                        {fq.available && quotaTexts.amount
+                          ? quotaTexts.amount
                           : t("card.viewDetail")}
                       </span>
                     </span>
