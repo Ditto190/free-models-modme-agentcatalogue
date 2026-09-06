@@ -249,12 +249,15 @@ export function ModelList({ models }: { models: Model[] }) {
         )}
       </div>
 
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-muted-foreground" aria-live="polite">
         {t("models.results", { n: filtered.length })}
       </p>
 
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-10 text-center text-muted-foreground shadow-sm">
+        <div
+          role="status"
+          className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-10 text-center text-muted-foreground shadow-sm"
+        >
           <SearchX className="h-10 w-10 text-muted-foreground/50" />
           <p className="text-sm">{t("models.noResults", { q: query.trim() || "…" })}</p>
         </div>

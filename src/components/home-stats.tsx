@@ -48,7 +48,7 @@ export function HomeStats({
             {s.icon}
             <span>{s.label}</span>
           </div>
-          <div className="mt-2 text-3xl font-bold tracking-tight text-foreground">
+          <div className="mt-2 text-3xl font-bold tracking-tight tabular-nums text-foreground">
             {s.value.toLocaleString()}
           </div>
         </div>

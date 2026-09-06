@@ -256,7 +256,11 @@ export function RelayList({ relays }: { relays: RelayCard[] }) {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm text-muted-foreground">{t("home.submitHint")}</p>
+          <p className="text-sm text-muted-foreground" aria-live="polite">
+            {hasFilters
+              ? t("relays.results", { n: filtered.length, total: relays.length })
+              : t("home.submitHint")}
+          </p>
           <SubmitRelayButton />
         </div>
       </div>

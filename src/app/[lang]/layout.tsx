@@ -124,10 +124,18 @@ export default async function LocaleLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+        >
+          {lang === "zh" ? "跳到主要内容" : "Skip to main content"}
+        </a>
         <JsonLd data={datasetLd(getCatalog(), `${SITE_URL}${localePath(lang, "/")}`)} />
         <AppProvider initialLocale={lang}>
           <Header />
-          <div className="flex-1">{children}</div>
+          <div id="main-content" tabIndex={-1} className="flex-1 outline-none">
+            {children}
+          </div>
           <Footer />
         </AppProvider>
       </body>

@@ -42,6 +42,15 @@ export function Header() {
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    function onEscape(e: KeyboardEvent) {
+      if (e.key === "Escape") setMobileOpen(false);
+    }
+    document.addEventListener("keydown", onEscape);
+    return () => document.removeEventListener("keydown", onEscape);
+  }, [mobileOpen]);
+
   const isActive = (href: string) =>
     href === "/" ? stripLocalePath(pathname) === "/" : stripLocalePath(pathname).startsWith(href);
 
