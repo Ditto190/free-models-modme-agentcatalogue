@@ -66,8 +66,9 @@ npm install
 npm run validate:data  # 数据一致性校验
 npm run dev        # 启动开发服务器，访问 http://localhost:3000
 npm run build      # 生产构建（类型检查 + 静态页 + 数据端点）
+npm run verify:endpoints  # 校验构建产物的 JSON/llms 端点形状（需先 build）
 ```
 
 ## 校验
 
-CI 会自动执行 `npm run validate:data` 与 `npm run build`（包含类型检查）。PR 需通过 CI。
+CI 会自动执行 `npm run validate:data`、`npm run build`（包含类型检查）与 `npm run verify:endpoints`。PR 需通过 CI。

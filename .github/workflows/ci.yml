@@ -19,11 +19,5 @@ jobs:
         run: npm run validate:data
       - name: Build (SSG + route handlers)
         run: npm run build
-      - name: Verify static route endpoints are prerendered
-        run: |
-          test -f .next/server/app/catalog.json.body
-          test -f .next/server/app/api.json.body
-          test -f .next/server/app/models.json.body
-          test -f .next/server/app/llms.txt.body
-          test -f .next/server/app/llms-full.txt.body
-          grep -q '"groq"' .next/server/app/api.json.body
+      - name: Verify serialized endpoint shape
+        run: npm run verify:endpoints
