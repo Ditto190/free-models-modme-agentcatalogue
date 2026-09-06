@@ -1,7 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { CheckCircle2, Minus, ArrowLeft, Gift, Database, Building2 } from "lucide-react";
+import {
+  ArrowLeft,
+  BookOpen,
+  Building2,
+  CheckCircle2,
+  Clock,
+  Database,
+  Gift,
+  Globe,
+  KeyRound,
+  Minus,
+  Plug,
+  Server,
+  ShieldCheck,
+  Sparkles,
+  Wallet,
+} from "lucide-react";
 import type { FreeQuotaType, Model, ModelRef, Relay } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { CopyButton } from "@/components/copy-button";
@@ -12,6 +28,28 @@ import { formatTokens } from "@/lib/format";
 import { FREE_VARIANT } from "@/lib/ui";
 import type { DictKey } from "@/lib/i18n";
 import { localePath } from "@/lib/locale";
+
+function OverviewItem({
+  icon,
+  label,
+  children,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border border-border/60 bg-card/70 p-3">
+      <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        {icon}
+        {label}
+      </div>
+      <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-foreground">
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export function RelayDetail({ relay, models }: { relay: Relay; models: Record<string, Model> }) {
   const { t, locale } = useApp();
@@ -58,6 +96,121 @@ export function RelayDetail({ relay, models }: { relay: Relay; models: Record<st
           </a>
         </div>
       </header>
+
+      {/* 概览 / 接入信息 */}
+      <section className="mt-6">
+        <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
+          <Plug className="h-4 w-4 text-sky-500" />
+          {t("detail.overview")}
+        </h2>
+        <div className="grid gap-3 rounded-2xl border border-border/60 bg-card p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3">
+          <OverviewItem icon={<Server className="h-3.5 w-3.5" />} label={t("detail.apiBase")}>
+            <code className="min-w-0 truncate rounded-md bg-secondary/60 px-2 py-1 font-mono text-xs">
+              {relay.api}
+            </code>
+            <CopyButton value={relay.api} size="icon" />
+          </OverviewItem>
+
+          <OverviewItem icon={<KeyRound className="h-3.5 w-3.5" />} label={t("detail.env")}>
+            {relay.auth.env.length > 0 ? (
+              <>
+                <code className="rounded-md bg-secondary/60 px-2 py-1 font-mono text-xs">
+                  {relay.auth.env.join(", ")}
+                </code>
+                <CopyButton value={relay.auth.env.join(", ")} size="icon" />
+              </>
+            ) : (
+              <span className="text-muted-foreground">—</span>
+            )}
+          </OverviewItem>
+
+          <OverviewItem icon={<Globe className="h-3.5 w-3.5" />} label={t("detail.website")}>
+            <a
+              href={relay.url}
+              target="_blank"
+              rel="noreferrer"
+              className="truncate underline underline-offset-4 hover:text-foreground"
+            >
+              {relay.url}
+            </a>
+          </OverviewItem>
+
+          <OverviewItem icon={<BookOpen className="h-3.5 w-3.5" />} label={t("card.doc")}>
+            {relay.doc ? (
+              <a
+                href={relay.doc}
+                target="_blank"
+                rel="noreferrer"
+                className="truncate underline underline-offset-4 hover:text-foreground"
+              >
+                {relay.doc}
+              </a>
+            ) : (
+              <span className="text-muted-foreground">—</span>
+            )}
+          </OverviewItem>
+
+          <OverviewItem icon={<ShieldCheck className="h-3.5 w-3.5" />} label={t("detail.auth")}>
+            <Badge variant="secondary">{t(`auth.${relay.auth.type}` as DictKey)}</Badge>
+            {relay.openai_compatible ? (
+              <Badge variant="success">{t("detail.openai")}</Badge>
+            ) : (
+              <Badge variant="warning">{t("detail.notOpenai")}</Badge>
+            )}
+          </OverviewItem>
+
+          <OverviewItem icon={<Wallet className="h-3.5 w-3.5" />} label={t("detail.pricing")}>
+            <Badge variant="secondary">{t(`pricing.${relay.pricing.model}` as DictKey)}</Badge>
+            {relay.pricing.notes && (
+              <span className="text-xs text-muted-foreground">{relay.pricing.notes}</span>
+            )}
+          </OverviewItem>
+
+          <OverviewItem icon={<Globe className="h-3.5 w-3.5" />} label={t("detail.region")}>
+            {relay.region.map((region) => (
+              <Badge key={region} variant="outline">
+                {t(`region.${region}` as DictKey)}
+              </Badge>
+            ))}
+          </OverviewItem>
+
+          <OverviewItem icon={<ShieldCheck className="h-3.5 w-3.5" />} label={t("detail.status")}>
+            <Badge
+              variant={
+                relay.status === "operational"
+                  ? "success"
+                  : relay.status === "degraded"
+                    ? "warning"
+                    : "destructive"
+              }
+            >
+              {t(`status.${relay.status}` as DictKey)}
+            </Badge>
+          </OverviewItem>
+
+          <OverviewItem icon={<Clock className="h-3.5 w-3.5" />} label={t("detail.updated")}>
+            {relay.updated_at}
+          </OverviewItem>
+
+          <div className="rounded-xl border border-border/60 bg-card/70 p-3 sm:col-span-2 lg:col-span-3">
+            <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+              {t("detail.features")}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {relay.features.length > 0 ? (
+                relay.features.map((feature) => (
+                  <Badge key={feature} variant="secondary">
+                    {t(`feature.${feature}` as DictKey)}
+                  </Badge>
+                ))
+              ) : (
+                <span className="text-sm text-muted-foreground">—</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 免费额度 */}
       <section className="mt-6">
