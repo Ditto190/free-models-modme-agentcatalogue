@@ -10,8 +10,9 @@ export default function Home() {
   const catalog = getCatalog();
   const relays = Object.values(catalog.api);
   const relayCount = relays.length;
-  const modelCount = Object.keys(catalog.models).length;
-  const freeRelayCount = relays.filter((r) => r.free_quota.available).length;
+  const models = Object.values(catalog.models);
+  const modelCount = models.length;
+  const freeModelCount = models.filter((m) => m.available_on.length > 0).length;
 
   // 列表行只用到少量字段，去掉嵌套 models 可显著减小页面 payload
   const relayCards: RelayCard[] = relays.map((r) => ({
@@ -50,7 +51,7 @@ export default function Home() {
       <JsonLd data={webSite} />
       <JsonLd data={itemList} />
       <PageHeader titleKey="nav.providers" descKey="site.tagline" />
-      <HomeStats relayCount={relayCount} modelCount={modelCount} freeRelayCount={freeRelayCount} />
+      <HomeStats relayCount={relayCount} modelCount={modelCount} freeModelCount={freeModelCount} />
       <RelayList relays={relayCards} />
     </main>
   );

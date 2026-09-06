@@ -6,11 +6,11 @@ import { useApp } from "@/components/providers";
 export function HomeStats({
   relayCount,
   modelCount,
-  freeRelayCount,
+  freeModelCount,
 }: {
   relayCount: number;
   modelCount: number;
-  freeRelayCount: number;
+  freeModelCount: number;
 }) {
   const { t } = useApp();
 
@@ -28,7 +28,7 @@ export function HomeStats({
     {
       icon: <Gift className="h-5 w-5 text-emerald-500" />,
       label: t("home.stats.free"),
-      value: freeRelayCount,
+      value: freeModelCount,
       accent: true,
     },
   ];
