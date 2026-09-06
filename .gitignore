@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Playwright CLI 临时快照
+.playwright-cli/
+
 # WorkBuddy project memory (internal, not source)
 .workbuddy/
 
