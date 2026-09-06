@@ -111,12 +111,6 @@ export default async function LocaleLayout({
     >
       <head>
         <meta name="theme-color" content="#09090b" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "try{var t=localStorage.getItem('theme')||'dark';document.documentElement.classList.toggle('dark',t==='dark');}catch(e){}",
-          }}
-        />
       </head>
       <body className="min-h-full flex flex-col">
         <a
