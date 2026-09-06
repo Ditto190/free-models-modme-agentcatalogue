@@ -249,7 +249,7 @@ export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrie
                     href={localePath(locale, `/relay/${r.id}`)}
                     className="group flex h-full items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-md"
                   >
-                    <RelayLogo id={r.id} name={r.name} size={44} logo={r.logo} />
+                    <RelayLogo id={r.id} name={r.name} size={44} logo={r.logo} decorative />
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-1.5 truncate font-medium text-foreground">
                         {r.name}

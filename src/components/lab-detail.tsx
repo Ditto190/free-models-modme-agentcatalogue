@@ -6,7 +6,7 @@ import { ArrowLeft, Copy, Check, CheckCircle2, Minus, Cpu } from "lucide-react";
 import type { Model } from "@/lib/types";
 import { useApp } from "@/components/providers";
 import { Button } from "@/components/ui/button";
-import { monogramStyle, initial } from "@/lib/visual";
+import { ProviderLogo } from "@/components/logo";
 import { formatTokens } from "@/lib/format";
 import { sortByReleaseDate } from "@/lib/sort";
 import { localePath } from "@/lib/locale";
@@ -44,12 +44,9 @@ export function LabDetail({
 
       {/* 头部 */}
       <header className="flex flex-col gap-4 rounded-2xl border border-border/60 bg-card p-5 shadow-sm sm:flex-row sm:items-center">
-        <span
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-2xl font-bold text-white shadow-sm"
-          style={monogramStyle(provider)}
-        >
-          {initial(provider)}
-        </span>
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border bg-card shadow-sm">
+          <ProviderLogo id={provider} size={40} />
+        </div>
         <div>
           <h1 className="text-3xl font-bold capitalize tracking-tight text-foreground text-balance">
             {provider}

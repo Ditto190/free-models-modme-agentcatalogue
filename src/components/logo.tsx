@@ -22,8 +22,7 @@ export function Logo({ className }: { className?: string }) {
     <svg
       viewBox="0 0 32 32"
       className={className}
-      role="img"
-      aria-label="Relay Free-Quota DB"
+      aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
     >
       <rect width="32" height="32" rx="8" fill="hsl(var(--brand))" />
@@ -85,6 +84,7 @@ function LogoBox({
   className,
   radius,
   fontSize,
+  decorative = false,
 }: {
   id: string;
   label: string;
@@ -93,6 +93,7 @@ function LogoBox({
   className?: string;
   radius: number;
   fontSize: number;
+  decorative?: boolean;
 }) {
   const [c1, c2] = brandColors(id);
   return (
@@ -101,8 +102,9 @@ function LogoBox({
       height={size}
       viewBox="0 0 40 40"
       className={className}
-      role="img"
-      aria-label={label}
+      role={decorative ? "presentation" : "img"}
+      aria-label={decorative ? undefined : label}
+      aria-hidden={decorative || undefined}
       style={{ flexShrink: 0 }}
     >
       <defs>
@@ -173,12 +175,14 @@ export function RelayLogo({
   size = 40,
   className,
   logo,
+  decorative = false,
 }: {
   id: string;
   name: string;
   size?: number;
   className?: string;
   logo?: string;
+  decorative?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
 
@@ -188,7 +192,8 @@ export function RelayLogo({
       // eslint-disable-next-line @next/next/no-img-element
       <img
         src={logo}
-        alt={name}
+        alt={decorative ? "" : name}
+        aria-hidden={decorative || undefined}
         width={size}
         height={size}
         loading="lazy"
@@ -208,6 +213,7 @@ export function RelayLogo({
       className={className}
       radius={10}
       fontSize={18}
+      decorative={decorative}
     />
   );
 }
