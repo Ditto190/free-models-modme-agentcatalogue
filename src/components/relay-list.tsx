@@ -13,12 +13,13 @@ import { cn } from "@/lib/utils";
 import { useQueryParam, setQueryParam } from "@/lib/url";
 import { SubmitRelayButton } from "@/components/submit-relay-button";
 import type { DictKey } from "@/lib/i18n";
+import { localePath } from "@/lib/locale";
 
 const QUOTA_TYPES: FreeQuotaType[] = ["credit", "token", "daily_checkin", "free_models", "unlimited"];
 
 /** 中转站列表行：桌面为表格行，移动端为卡片 */
 function RelayRow({ relay }: { relay: RelayCard }) {
-  const { t } = useApp();
+  const { t, locale } = useApp();
   const fq = relay.free_quota;
   const fType = fq.type as FreeQuotaType | undefined;
   const providers = relay.providers.slice(0, 3);
@@ -32,7 +33,7 @@ function RelayRow({ relay }: { relay: RelayCard }) {
         <RelayLogo id={relay.id} name={relay.name} size={40} logo={relay.logo} />
         <div className="min-w-0">
           <Link
-            href={`/relay/${relay.id}`}
+            href={localePath(locale, `/relay/${relay.id}`)}
             className="block truncate font-semibold text-foreground hover:underline"
           >
             {relay.name}
@@ -78,7 +79,7 @@ function RelayRow({ relay }: { relay: RelayCard }) {
           {providers.map((p) => (
             <Link
               key={p}
-              href={`/labs/${p}`}
+              href={localePath(locale, `/labs/${p}`)}
               title={p}
               className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
@@ -99,7 +100,7 @@ function RelayRow({ relay }: { relay: RelayCard }) {
       {/* 操作 */}
       <div className="flex items-center gap-2 px-4 pb-3 md:py-3">
         <Button asChild size="sm" className="flex-1">
-          <Link href={`/relay/${relay.id}`}>{t("card.viewDetail")}</Link>
+          <Link href={localePath(locale, `/relay/${relay.id}`)}>{t("card.viewDetail")}</Link>
         </Button>
         <Button asChild size="sm" variant="outline">
           <a href={relay.auth.signup} target="_blank" rel="noreferrer">

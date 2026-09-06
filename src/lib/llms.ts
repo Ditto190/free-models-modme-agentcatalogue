@@ -5,6 +5,7 @@ import type { CatalogJson, Relay } from "@/lib/types";
 import { SITE_URL } from "@/lib/site";
 
 const BASE = SITE_URL;
+const zh = (path: string) => `${BASE}/zh${path === "/" ? "" : path}`;
 
 function freeText(r: Relay): string {
   const fq = r.free_quota;
@@ -23,9 +24,9 @@ export function generateLlms(catalog: CatalogJson): string {
   lines.push("");
   lines.push("## 页面");
   lines.push("");
-  lines.push(`- [模型库](${BASE}/)：全部模型规格（上下文/输出/推理/工具/权重/价格）与可免费使用的中转站`);
-  lines.push(`- [中转站（供应商）](${BASE}/providers)：中转站列表（免费额度、说明）`);
-  lines.push(`- [关于](${BASE}/about)：站点说明与数据端点文档`);
+  lines.push(`- [模型库](${zh("/models")})：全部模型规格（上下文/输出/推理/工具/权重/价格）与可免费使用的中转站`);
+  lines.push(`- [中转站（供应商）](${zh("/")})：中转站列表（免费额度、说明）`);
+  lines.push(`- [关于](${zh("/about")})：站点说明与数据端点文档`);
   lines.push("");
   lines.push("## 数据端点（JSON，可 GET）");
   lines.push("");
@@ -39,14 +40,14 @@ export function generateLlms(catalog: CatalogJson): string {
     const on = m.available_on.join("、") || "暂无";
     const price = m.price ? `$${m.price.input ?? "?"}/$${m.price.output ?? "?"}/1M` : "—";
     lines.push(
-      `- [${m.name}](${BASE}/models/${m.id}) — ${m.provider}，上下文 ${m.context ?? "?"}，价格 ${price}，免费中转站：${on}`,
+      `- [${m.name}](${zh(`/models/${m.id}`)}) — ${m.provider}，上下文 ${m.context ?? "?"}，价格 ${price}，免费中转站：${on}`,
     );
   }
   lines.push("");
   lines.push(`## 中转站（${relays.length}）`);
   lines.push("");
   for (const r of relays) {
-    lines.push(`- [${r.name}](${BASE}/relay/${r.id}) — API ${r.api}；免费额度：${freeText(r) || "—"}`);
+    lines.push(`- [${r.name}](${zh(`/relay/${r.id}`)}) — API ${r.api}；免费额度：${freeText(r) || "—"}`);
   }
   lines.push("");
 

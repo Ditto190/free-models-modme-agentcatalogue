@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { monogramStyle, initial } from "@/lib/visual";
 import { formatTokens } from "@/lib/format";
 import { sortByReleaseDate } from "@/lib/sort";
+import { localePath } from "@/lib/locale";
 
 /** 厂商（lab）独立页 */
 export function LabDetail({
@@ -18,7 +19,7 @@ export function LabDetail({
   provider: string;
   models: Model[];
 }) {
-  const { t } = useApp();
+  const { t, locale } = useApp();
   const [copied, setCopied] = useState<string | null>(null);
   const sorted = useMemo(() => sortByReleaseDate(models), [models]);
 
@@ -35,7 +36,7 @@ export function LabDetail({
   return (
     <div className="space-y-8">
       <Button variant="ghost" size="sm" asChild className="-ml-2 h-10 px-2">
-        <Link href="/providers">
+        <Link href={localePath(locale, "/providers")}>
           <ArrowLeft className="h-4 w-4" />
           {t("labs.back")}
         </Link>
@@ -87,7 +88,7 @@ export function LabDetail({
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
                       <Link
-                        href={`/models/${m.id}`}
+                        href={localePath(locale, `/models/${m.id}`)}
                         className="truncate font-medium text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         {m.name}
@@ -145,7 +146,7 @@ export function LabDetail({
                         {shown.map((rid) => (
                           <Link
                             key={rid}
-                            href={`/relay/${rid}`}
+                            href={localePath(locale, `/relay/${rid}`)}
                             className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-500/20 transition-colors hover:bg-emerald-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-emerald-400"
                           >
                             {rid}

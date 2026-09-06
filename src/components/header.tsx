@@ -13,6 +13,7 @@ import { SubmitRelayButton } from "@/components/submit-relay-button";
 import { REPO_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import type { DictKey } from "@/lib/i18n";
+import { localePath, stripLocalePath } from "@/lib/locale";
 
 const NAV: { href: string; key: DictKey }[] = [
   { href: "/", key: "nav.providers" },
@@ -21,7 +22,7 @@ const NAV: { href: string; key: DictKey }[] = [
 ];
 
 export function Header() {
-  const { t, theme, toggleTheme } = useApp();
+  const { t, theme, toggleTheme, locale } = useApp();
   const pathname = usePathname();
   const router = useRouter();
   const [q, setQ] = useState("");
@@ -42,19 +43,19 @@ export function Header() {
   }, []);
 
   const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+    href === "/" ? stripLocalePath(pathname) === "/" : stripLocalePath(pathname).startsWith(href);
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
     const term = q.trim();
-    router.push(term ? `/models?q=${encodeURIComponent(term)}` : "/models");
+    router.push(localePath(locale, term ? `/models?q=${encodeURIComponent(term)}` : "/models"));
     setMobileOpen(false);
   };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-14 max-w-[1600px] items-center gap-2 px-4">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
+        <Link href={localePath(locale, "/")} className="flex items-center gap-2 font-semibold">
           <Logo className="h-7 w-7" />
           <span className="text-foreground">{t("site.title")}</span>
         </Link>
@@ -63,7 +64,7 @@ export function Header() {
           {NAV.map((item) => (
             <Link
               key={item.href}
-              href={item.href}
+              href={localePath(locale, item.href)}
               className={cn(
                 "rounded-md px-3 py-1.5 transition-colors",
                 isActive(item.href)
@@ -153,7 +154,7 @@ export function Header() {
               {NAV.map((item) => (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={localePath(locale, item.href)}
                   onClick={() => setMobileOpen(false)}
                   className={cn(
                     "rounded-md px-3 py-2 text-sm transition-colors",

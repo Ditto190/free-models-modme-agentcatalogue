@@ -7,7 +7,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { type Locale, type DictKey, translate } from "@/lib/i18n";
+import { localePath, stripLocalePath } from "@/lib/locale";
 
 type Theme = "dark" | "light";
 
@@ -31,11 +33,17 @@ function readStorage<T extends string>(key: string, fallback: T): T {
   }
 }
 
-export function AppProvider({ children }: { children: ReactNode }) {
-  // 惰性初始化读取偏好（SSR 时返回默认值，避免 effect 内 setState）
-  const [locale, setLocaleState] = useState<Locale>(() =>
-    readStorage("locale", "zh" as Locale),
-  );
+export function AppProvider({
+  initialLocale = "zh",
+  children,
+}: {
+  initialLocale?: Locale;
+  children: ReactNode;
+}) {
+  const pathname = usePathname();
+  const router = useRouter();
+  // 语言由路由决定（/zh、/en），不走 localStorage，保证服务端渲染与 SEO 一致
+  const [locale, setLocaleState] = useState<Locale>(initialLocale);
   const [theme, setThemeState] = useState<Theme>(() =>
     readStorage("theme", "dark" as Theme),
   );
@@ -54,8 +62,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setLocaleState(l);
     try {
       localStorage.setItem("locale", l);
+      document.cookie = `locale=${l};max-age=31536000;path=/;samesite=lax`;
     } catch {
       /* 忽略 */
+    }
+    if (/^\/(zh|en)(?=\/|$)/.test(pathname)) {
+      const search = typeof window === "undefined" ? "" : window.location.search;
+      router.replace(`${localePath(l, stripLocalePath(pathname))}${search}`);
     }
   };
   const toggleLocale = () => setLocale(locale === "zh" ? "en" : "zh");

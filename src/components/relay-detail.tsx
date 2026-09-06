@@ -11,9 +11,10 @@ import { ProviderLogo, RelayLogo } from "@/components/logo";
 import { formatTokens } from "@/lib/format";
 import { FREE_VARIANT } from "@/lib/ui";
 import type { DictKey } from "@/lib/i18n";
+import { localePath } from "@/lib/locale";
 
 export function RelayDetail({ relay, models }: { relay: Relay; models: Record<string, Model> }) {
-  const { t } = useApp();
+  const { t, locale } = useApp();
   const fq = relay.free_quota;
   const fType = fq.type as FreeQuotaType | undefined;
   const modelCount = Object.keys(relay.models).length;
@@ -21,7 +22,7 @@ export function RelayDetail({ relay, models }: { relay: Relay; models: Record<st
   return (
     <main className="mx-auto max-w-6xl px-4 py-6">
       <Button variant="ghost" size="sm" asChild className="-ml-2 h-10 px-2">
-        <Link href="/">
+        <Link href={localePath(locale, "/")}>
           <ArrowLeft className="h-4 w-4" />
           {t("detail.back")}
         </Link>
@@ -116,7 +117,7 @@ export function RelayDetail({ relay, models }: { relay: Relay; models: Record<st
           {relay.providers.map((p) => (
             <Link
               key={p}
-              href={`/labs/${p}`}
+              href={localePath(locale, `/labs/${p}`)}
               title={p}
               className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card/80 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
@@ -172,13 +173,13 @@ function ModelRow({
   refModel: ModelRef;
   model?: Model;
 }) {
-  const { t } = useApp();
+  const { t, locale } = useApp();
   const price = refModel.cost ?? model?.price;
   return (
     <tr className="transition-colors hover:bg-accent/40">
       <td className="px-3 py-2 sm:px-4 sm:py-2.5">
         <Link
-          href={`/models/${id}`}
+          href={localePath(locale, `/models/${id}`)}
           className="font-medium text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {model?.name ?? refModel.name ?? id}

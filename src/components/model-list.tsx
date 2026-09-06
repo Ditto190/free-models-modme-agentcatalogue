@@ -9,6 +9,7 @@ import { formatTokens } from "@/lib/format";
 import { sortByReleaseDate } from "@/lib/sort";
 import { useQueryParam, setQueryParam } from "@/lib/url";
 import { cn } from "@/lib/utils";
+import { localePath } from "@/lib/locale";
 
 function matchesQuery(model: Model, q: string): boolean {
   const term = q.trim().toLowerCase();
@@ -35,7 +36,7 @@ type ModelSort = "latest" | "name" | "context" | "price";
 
 /** 模型库列表（支持 URL 查询参数搜索与即时过滤） */
 export function ModelList({ models }: { models: Model[] }) {
-  const { t } = useApp();
+  const { t, locale } = useApp();
   const query = useQueryParam("q");
   const providerFilter = useQueryParam("provider");
   const sortRaw = useQueryParam("sort") || "latest";
@@ -283,7 +284,7 @@ export function ModelList({ models }: { models: Model[] }) {
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
                       <Link
-                        href={`/models/${m.id}`}
+                        href={localePath(locale, `/models/${m.id}`)}
                         className="truncate font-medium text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         {m.name}
@@ -332,7 +333,7 @@ export function ModelList({ models }: { models: Model[] }) {
                   {/* 厂商 */}
                   <div className="hidden text-sm capitalize text-muted-foreground md:block">
                     <Link
-                      href={`/labs/${m.provider}`}
+                      href={localePath(locale, `/labs/${m.provider}`)}
                       className="rounded-md px-1.5 py-0.5 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       {m.provider}
@@ -387,7 +388,7 @@ export function ModelList({ models }: { models: Model[] }) {
                         {shown.map((rid) => (
                           <Link
                             key={rid}
-                            href={`/relay/${rid}`}
+                            href={localePath(locale, `/relay/${rid}`)}
                             className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-500/20 transition-colors hover:bg-emerald-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-emerald-400"
                           >
                             {rid}

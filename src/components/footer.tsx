@@ -5,6 +5,7 @@ import { useApp } from "@/components/providers";
 import { GithubIcon } from "@/components/github-icon";
 import { Logo } from "@/components/logo";
 import { REPO_URL } from "@/lib/site";
+import { localePath } from "@/lib/locale";
 
 const FOOTER_LINKS = [
   { href: "/", key: "nav.providers" },
@@ -13,12 +14,12 @@ const FOOTER_LINKS = [
 ];
 
 export function Footer() {
-  const { t } = useApp();
+  const { t, locale } = useApp();
   return (
     <footer className="border-t border-border/70 bg-card/30">
       <div className="mx-auto flex max-w-[1600px] flex-col gap-6 px-4 py-8 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-2">
-          <Link href="/" className="inline-flex items-center gap-2 font-semibold text-foreground">
+          <Link href={localePath(locale, "/")} className="inline-flex items-center gap-2 font-semibold text-foreground">
             <Logo className="h-6 w-6" />
             <span>{t("site.title")}</span>
           </Link>
@@ -29,7 +30,7 @@ export function Footer() {
           {FOOTER_LINKS.map((item) => (
             <Link
               key={item.href}
-              href={item.href}
+              href={localePath(locale, item.href)}
               className="transition-colors hover:text-foreground"
             >
               {t(item.key as Parameters<typeof t>[0])}

@@ -30,6 +30,7 @@ import { ProviderLogo, RelayLogo } from "@/components/logo";
 import { formatTokens } from "@/lib/format";
 import { FREE_VARIANT } from "@/lib/ui";
 import type { DictKey } from "@/lib/i18n";
+import { localePath } from "@/lib/locale";
 
 function fmtPrice(n?: number): string {
   return n === undefined ? "?" : n.toFixed(2);
@@ -98,7 +99,7 @@ function specIcon(label: string): React.ReactNode {
 }
 
 export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrief[] }) {
-  const { t } = useApp();
+  const { t, locale } = useApp();
   const [copied, setCopied] = useState(false);
 
   const copyId = async () => {
@@ -114,7 +115,7 @@ export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrie
   return (
     <div className="space-y-8">
       <Button variant="ghost" size="sm" asChild className="-ml-2 h-10 px-2">
-        <Link href="/models">
+        <Link href={localePath(locale, "/models")}>
           <ArrowLeft className="h-4 w-4" />
           {t("models.back")}
         </Link>
@@ -147,7 +148,7 @@ export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrie
           <div className="mt-1.5 flex flex-wrap items-center gap-2 font-mono text-sm text-muted-foreground">
             <span>{model.id}</span>
             <Link
-              href={`/labs/${model.provider}`}
+              href={localePath(locale, `/labs/${model.provider}`)}
               className="rounded-md bg-secondary px-2 py-0.5 text-xs capitalize text-secondary-foreground transition-colors hover:bg-secondary/80"
             >
               {model.provider}
@@ -245,7 +246,7 @@ export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrie
               return (
                 <li key={r.id}>
                   <Link
-                    href={`/relay/${r.id}`}
+                    href={localePath(locale, `/relay/${r.id}`)}
                     className="group flex h-full items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-md"
                   >
                     <RelayLogo id={r.id} name={r.name} size={44} logo={r.logo} />
