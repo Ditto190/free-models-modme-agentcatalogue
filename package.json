@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "validate:data": "node scripts/validate-data.mjs",
+    "validate:i18n": "node scripts/validate-i18n.mjs",
     "verify:endpoints": "node scripts/verify-endpoints.mjs",
     "lint": "eslint"
   },

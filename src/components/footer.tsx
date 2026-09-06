@@ -51,13 +51,13 @@ export function Footer() {
           {t("api.note")}
           <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
             <a className="underline hover:text-foreground" href="/api.json">
-              /api.json
+              {t("api.apiJson")}
             </a>
             <a className="underline hover:text-foreground" href="/models.json">
-              /models.json
+              {t("api.modelsJson")}
             </a>
             <a className="underline hover:text-foreground" href="/catalog.json">
-              /catalog.json
+              {t("api.catalogJson")}
             </a>
           </div>
         </div>

@@ -36,22 +36,23 @@ function fmtPrice(n?: number): string {
   return n === undefined ? "?" : n.toFixed(2);
 }
 
-function modalityIcon(value: string): { icon: React.ReactNode; label: string } | null {
+function modalityIcon(value: string): { icon: React.ReactNode; labelKey: DictKey } | null {
   switch (value) {
     case "text":
-      return { icon: <Type className="h-3.5 w-3.5" />, label: "text" };
+      return { icon: <Type className="h-3.5 w-3.5" />, labelKey: "models.modalityText" };
     case "image":
-      return { icon: <ImageIcon className="h-3.5 w-3.5" />, label: "image" };
+      return { icon: <ImageIcon className="h-3.5 w-3.5" />, labelKey: "models.modalityImage" };
     case "audio":
-      return { icon: <AudioLines className="h-3.5 w-3.5" />, label: "audio" };
+      return { icon: <AudioLines className="h-3.5 w-3.5" />, labelKey: "models.modalityAudio" };
     case "video":
-      return { icon: <Video className="h-3.5 w-3.5" />, label: "video" };
+      return { icon: <Video className="h-3.5 w-3.5" />, labelKey: "models.modalityVideo" };
     default:
       return null;
   }
 }
 
 function ModalityChips({ values }: { values: string[] }) {
+  const { t } = useApp();
   if (values.length === 0) return "—";
   return (
     <div className="flex flex-wrap gap-2">
@@ -64,7 +65,7 @@ function ModalityChips({ values }: { values: string[] }) {
             className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground"
           >
             {mapped.icon}
-            {mapped.label}
+            {t(mapped.labelKey)}
           </span>
         );
       })}
@@ -197,6 +198,7 @@ export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrie
       </section>
 
       {/* 详细规格 */}
+      <h2 className="sr-only">{t("models.spec")}</h2>
       <Card>
         <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Spec

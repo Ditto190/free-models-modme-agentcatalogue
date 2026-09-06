@@ -27,6 +27,11 @@ export function AboutContent({
   const { t } = useApp();
   return (
     <div className="space-y-6 text-sm leading-relaxed text-muted-foreground">
+      {/* 站点介绍 */}
+      <p className="rounded-2xl border border-border/60 bg-card p-5 text-base shadow-sm">
+        {t("about.body")}
+      </p>
+
       {/* 收录标准 */}
       <section className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
         <h2 className="mb-2 flex items-center gap-2 text-base font-semibold text-foreground">
@@ -74,6 +79,7 @@ export function AboutContent({
           <HandHeart className="h-4 w-4 text-rose-500" />
           {t("about.contribute.title")}
         </h2>
+        <p className="mb-4">{t("about.contribute")}</p>
         <ol className="space-y-3">
           {STEPS.map((step, i) => (
             <li key={step} className="flex items-start gap-3">
