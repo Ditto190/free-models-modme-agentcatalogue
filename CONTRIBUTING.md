@@ -21,7 +21,9 @@ CI 会自动校验数据与构建。
 - `src/data/relays.ts` —— 中转站清单（含 API base、鉴权、免费额度、支持的厂商/模型）
 - `src/data/models.ts` —— 共享模型目录（跨中转站复用的模型规格）
 
-`model_count` 与每个模型的 `available_on`（在哪些中转站可用）由 `src/lib/data.ts` 在构建期**自动计算**（数据端点 `/api.json`、`/models.json`、`/catalog.json` 及 `/llms.txt` 均为路由静态生成），请勿手填。
+`model_count`、每个模型的 `available_on`（在哪些中转站列出）与 `free_on`（在哪些中转站属于免费额度覆盖）由 `src/lib/data.ts` 在构建期**自动计算**（数据端点 `/api.json`、`/models.json`、`/catalog.json` 及 `/llms.txt` 均为路由静态生成），请勿手填。
+
+`providers` 必须与 `relay.models` 中实际列出的厂商一致：校验脚本会分别检查“声明了厂商但没有对应模型”和“提供了模型但 providers 漏写”两种情况。模型目录中的条目应尽量被至少一家中转站引用，孤儿条目会在 `npm run validate:data` 中给出警告。
 
 ## 新增 / 修正一家中转站
 
@@ -64,6 +66,7 @@ CI 会自动校验数据与构建。
 ```bash
 npm install
 npm run validate:data  # 数据一致性校验
+npm run validate:i18n  # 中英字典 key 对齐与未使用 key 检查
 npm run dev        # 启动开发服务器，访问 http://localhost:3000
 npm run build      # 生产构建（类型检查 + 静态页 + 数据端点）
 npm run verify:endpoints  # 校验构建产物的 JSON/llms 端点形状（需先 build）
@@ -71,4 +74,4 @@ npm run verify:endpoints  # 校验构建产物的 JSON/llms 端点形状（需�
 
 ## 校验
 
-CI 会自动执行 `npm run validate:data`、`npm run build`（包含类型检查）与 `npm run verify:endpoints`。PR 需通过 CI。
+CI 会自动执行 `npm run validate:data`、`npm run validate:i18n`、`npm run lint`、`npm run build`（包含类型检查）与 `npm run verify:endpoints`。PR 需通过 CI。
