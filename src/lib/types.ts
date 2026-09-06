@@ -106,5 +106,5 @@ export type RelayBrief = Pick<Relay, "id" | "name" | "logo" | "free_quota">;
 /** 中转站列表行所需的精简信息（去掉嵌套 models，避免 RSC payload 膨胀） */
 export type RelayCard = Pick<
   Relay,
-  "id" | "name" | "logo" | "free_quota" | "pricing" | "providers" | "model_count" | "auth"
+  "id" | "name" | "logo" | "free_quota" | "pricing" | "providers" | "model_count" | "auth" | "region"
 >;

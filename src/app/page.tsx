@@ -24,6 +24,7 @@ export default function Home() {
     providers: r.providers,
     model_count: r.model_count,
     auth: r.auth,
+    region: r.region,
   }));
 
   const webSite = {
