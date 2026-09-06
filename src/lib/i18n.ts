@@ -140,6 +140,9 @@ export const dictionaries = {
     "labs.back": "返回供应商页",
     "submitRelay": "提交中转站",
     "home.submitHint": "知道一家有免费额度的中转站？欢迎提交。",
+    "notFound.title": "页面未找到",
+    "notFound.body": "你访问的页面不存在或已迁移。",
+    "notFound.backHome": "返回首页",
   },
   en: {
     "site.title": "Relay Free-Quota DB",
@@ -278,6 +281,9 @@ export const dictionaries = {
     "labs.back": "Back to providers",
     "submitRelay": "Submit relay",
     "home.submitHint": "Know a relay with free quota? Submit it.",
+    "notFound.title": "Page not found",
+    "notFound.body": "The page you are looking for does not exist or has moved.",
+    "notFound.backHome": "Back to home",
   },
 } as const;
 
