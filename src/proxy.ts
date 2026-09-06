@@ -22,7 +22,10 @@ export function proxy(request: NextRequest) {
   const path = pathname === "/" ? "" : pathname;
   request.nextUrl.pathname = `/${locale}${path}`;
   request.nextUrl.search = search;
-  return NextResponse.redirect(request.nextUrl);
+  const response = NextResponse.redirect(request.nextUrl);
+  // 根路径根据 Accept-Language/Cookie 选择语言，不能被 CDN 缓存成单一版本
+  response.headers.set("Vary", "Accept-Language, Cookie");
+  return response;
 }
 
 export const config = {
