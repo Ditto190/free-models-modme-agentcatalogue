@@ -87,7 +87,6 @@ export const relays: Relay[] = [
       type: "credit",
       amount: "注册送 $50 / 每日签到 $25",
       amount_usd: 50,
-      models: ["anyrouter/free"],
       parts: [
         { type: "credit", amount: "注册送 $50", amount_usd: 50 },
         { type: "daily_checkin", amount: "每日签到 $25", amount_usd: 25 },
