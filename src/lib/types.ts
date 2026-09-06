@@ -9,6 +9,16 @@ export type FreeQuotaType =
   | "free_models" // 部分模型永久免费
   | "unlimited"; // 公测/研究无限免费
 
+/** 免费额度的结构化分项（本站扩展字段，如注册赠送 + 每日签到并存） */
+export interface FreeQuotaPart {
+  type: FreeQuotaType;
+  /** 人类可读描述，如 "$50"、"200 积分" */
+  amount?: string;
+  /** 近似美元金额，用于排序 */
+  amount_usd?: number;
+  notes?: string;
+}
+
 export type PricingModel = "no_markup" | "retail" | "markup" | "free";
 export type AuthType = "api_key" | "oauth" | "none";
 export type RelayStatus = "operational" | "degraded" | "down";
@@ -24,6 +34,8 @@ export interface FreeQuota {
   amount_usd?: number;
   /** 免费额度覆盖的模型 id 列表（可选） */
   models?: string[];
+  /** 结构化分项（可选；如注册赠送与每日签到同时存在时使用） */
+  parts?: FreeQuotaPart[];
   /** 有效期 / 过期说明（可选） */
   expires?: string;
   notes?: string;

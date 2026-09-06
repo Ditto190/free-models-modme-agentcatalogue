@@ -102,6 +102,18 @@ for (const relay of relays) {
     !relay.free_quota?.type || FREE_TYPES.has(relay.free_quota.type),
     `${tag}: free_quota.type "${relay.free_quota?.type}" 不在 FreeQuotaType 内`,
   );
+  if (Array.isArray(relay.free_quota?.parts)) {
+    const partTypes = relay.free_quota.parts.map((part) => part.type);
+    const partDupes = findDuplicates(partTypes);
+    check(partDupes.length === 0, `${tag}: free_quota.parts 中存在重复额度类型：${partDupes.join(", ")}`);
+    for (const part of relay.free_quota.parts) {
+      check(FREE_TYPES.has(part.type), `${tag}: free_quota.parts 的额度类型 "${part.type}" 不合法`);
+      check(typeof part.amount === "string" && part.amount.trim().length > 0, `${tag}: free_quota.parts（${part.type}）缺少 amount`);
+      if (part.amount_usd != null) {
+        check(Number.isFinite(part.amount_usd) && part.amount_usd >= 0, `${tag}: free_quota.parts（${part.type}）的 amount_usd 不是非负数字`);
+      }
+    }
+  }
 
   // model_count 由构建期自动计算，源数据中应保持 0，禁止手填
   check(relay.model_count === 0, `${tag}: model_count 由 src/lib/data.ts 自动计算，请保持 0`);

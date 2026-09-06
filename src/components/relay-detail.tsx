@@ -75,6 +75,22 @@ export function RelayDetail({ relay, models }: { relay: Relay; models: Record<st
             <div className="space-y-2">
               <div className="text-2xl font-bold text-foreground">{fq.amount}</div>
               {fq.notes && <p className="text-sm text-muted-foreground">{fq.notes}</p>}
+              {fq.parts && fq.parts.length > 0 && (
+                <div className="grid gap-2 pt-2 sm:grid-cols-2">
+                  {fq.parts.map((part, index) => (
+                    <div
+                      key={`${part.type}-${index}`}
+                      className="rounded-xl border border-border/60 bg-card/70 p-3"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Badge variant={FREE_VARIANT[part.type]}>{t(`free.${part.type}` as DictKey)}</Badge>
+                        {part.amount && <span className="text-sm font-semibold text-foreground">{part.amount}</span>}
+                      </div>
+                      {part.notes && <p className="mt-1 text-xs text-muted-foreground">{part.notes}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
               {fq.expires && (
                 <p className="text-sm text-muted-foreground">
                   {t("detail.expires", { date: fq.expires })}

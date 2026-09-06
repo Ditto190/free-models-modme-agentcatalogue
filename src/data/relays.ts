@@ -31,6 +31,15 @@ export const relays: Relay[] = [
       type: "credit",
       amount: "注册送 $50 / 每日签到 $25",
       amount_usd: 50,
+      parts: [
+        { type: "credit", amount: "注册送 $50", amount_usd: 50 },
+        {
+          type: "daily_checkin",
+          amount: "每日签到 $25",
+          amount_usd: 25,
+          notes: "每日签到需要退出并重新登录。",
+        },
+      ],
       notes: "只支持 LinuxDo 和 GitHub 注册。每日签到需要退出并重新登录。",
     },
     pricing: { model: "no_markup", notes: "按零售价计费。" },
@@ -76,6 +85,10 @@ export const relays: Relay[] = [
       amount: "注册送 $50 / 每日签到 $25",
       amount_usd: 50,
       models: ["anyrouter/free"],
+      parts: [
+        { type: "credit", amount: "注册送 $50", amount_usd: 50 },
+        { type: "daily_checkin", amount: "每日签到 $25", amount_usd: 25 },
+      ],
       notes: "只支持 LinuxDo 和教育邮箱注册。",
     },
     pricing: { model: "no_markup", notes: "按上游原价计费，不加成。" },
