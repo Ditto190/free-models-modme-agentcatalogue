@@ -8,6 +8,7 @@ import { useApp } from "@/components/providers";
 import { formatTokens } from "@/lib/format";
 import { sortByReleaseDate } from "@/lib/sort";
 import { useQueryParam, setQueryParam } from "@/lib/url";
+import { cn } from "@/lib/utils";
 
 function matchesQuery(model: Model, q: string): boolean {
   const term = q.trim().toLowerCase();
@@ -19,22 +20,92 @@ function matchesQuery(model: Model, q: string): boolean {
   );
 }
 
+function matchesFlags(
+  model: Model,
+  flags: { reasoning: boolean; tool: boolean; structured: boolean; openWeights: boolean },
+): boolean {
+  if (flags.reasoning && !model.reasoning) return false;
+  if (flags.tool && !model.tool_call) return false;
+  if (flags.structured && !model.structured_output) return false;
+  if (flags.openWeights && !model.open_weights) return false;
+  return true;
+}
+
+type ModelSort = "latest" | "name" | "context" | "price";
+
 /** 模型库列表（支持 URL 查询参数搜索与即时过滤） */
 export function ModelList({ models }: { models: Model[] }) {
   const { t } = useApp();
   const query = useQueryParam("q");
+  const providerFilter = useQueryParam("provider");
+  const sortRaw = useQueryParam("sort") || "latest";
+  const reasoningFilter = useQueryParam("reasoning") === "1";
+  const toolFilter = useQueryParam("tool") === "1";
+  const structuredFilter = useQueryParam("structured") === "1";
+  const openWeightsFilter = useQueryParam("open") === "1";
 
   const allModels = useMemo(() => sortByReleaseDate(models), [models]);
 
   const [copied, setCopied] = useState<string | null>(null);
 
   const filtered = useMemo(
-    () => allModels.filter((m) => matchesQuery(m, query)),
-    [allModels, query],
+    () => {
+      const flags = {
+        reasoning: reasoningFilter,
+        tool: toolFilter,
+        structured: structuredFilter,
+        openWeights: openWeightsFilter,
+      };
+      let list = allModels.filter(
+        (m) =>
+          matchesQuery(m, query) &&
+          (!providerFilter || m.provider === providerFilter) &&
+          matchesFlags(m, flags),
+      );
+      const sort = (sortRaw || "latest") as ModelSort;
+      if (sort === "name") {
+        list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+      } else if (sort === "context") {
+        list = [...list].sort((a, b) => (b.context ?? 0) - (a.context ?? 0));
+      } else if (sort === "price") {
+        list = [...list].sort((a, b) => (a.price?.input ?? Infinity) - (b.price?.input ?? Infinity));
+      } else {
+        list = sortByReleaseDate(list);
+      }
+      return list;
+    },
+    [allModels, query, providerFilter, sortRaw, reasoningFilter, toolFilter, structuredFilter, openWeightsFilter],
   );
 
   const updateQuery = (value: string) => {
     setQueryParam("q", value.trim());
+  };
+
+  const providers = useMemo(
+    () => [...new Set(models.map((m) => m.provider))].sort((a, b) => a.localeCompare(b)),
+    [models],
+  );
+
+  const toggleFilter = (key: "reasoning" | "tool" | "structured" | "open") => {
+    const active =
+      key === "reasoning"
+        ? reasoningFilter
+        : key === "tool"
+          ? toolFilter
+          : key === "structured"
+            ? structuredFilter
+            : openWeightsFilter;
+    setQueryParam(key, active ? "" : "1");
+  };
+
+  const hasFilters = Boolean(
+    query || providerFilter || reasoningFilter || toolFilter || structuredFilter || openWeightsFilter || sortRaw !== "latest",
+  );
+
+  const clearFilters = () => {
+    for (const key of ["q", "provider", "sort", "reasoning", "tool", "structured", "open"]) {
+      setQueryParam(key, "");
+    }
   };
 
   const copyId = async (id: string) => {
@@ -75,6 +146,104 @@ export function ModelList({ models }: { models: Model[] }) {
             className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      {/* 筛选与排序 */}
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="flex items-center gap-2 rounded-lg border border-border/60 bg-card px-2.5 py-2 text-sm shadow-sm">
+          <span className="text-xs text-muted-foreground">{t("models.provider")}</span>
+          <select
+            value={providerFilter}
+            onChange={(e) => setQueryParam("provider", e.target.value)}
+            aria-label={t("models.provider")}
+            className="bg-transparent text-foreground focus:outline-none"
+          >
+            <option value="">{t("models.allProviders")}</option>
+            {providers.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="flex items-center gap-2 rounded-lg border border-border/60 bg-card px-2.5 py-2 text-sm shadow-sm">
+          <span className="text-xs text-muted-foreground">{t("models.sortBy")}</span>
+          <select
+            value={sortRaw}
+            onChange={(e) => setQueryParam("sort", e.target.value)}
+            aria-label={t("models.sortBy")}
+            className="bg-transparent text-foreground focus:outline-none"
+          >
+            <option value="latest">{t("models.sortLatest")}</option>
+            <option value="name">{t("models.sortName")}</option>
+            <option value="context">{t("models.sortContext")}</option>
+            <option value="price">{t("models.sortPrice")}</option>
+          </select>
+        </label>
+
+        <button
+          type="button"
+          onClick={() => toggleFilter("reasoning")}
+          aria-pressed={reasoningFilter}
+          className={cn(
+            "rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition-colors",
+            reasoningFilter
+              ? "bg-emerald-500/15 text-emerald-700 ring-emerald-500/30 dark:text-emerald-400"
+              : "bg-card text-muted-foreground ring-border hover:bg-accent",
+          )}
+        >
+          {t("models.reasoning")}
+        </button>
+        <button
+          type="button"
+          onClick={() => toggleFilter("tool")}
+          aria-pressed={toolFilter}
+          className={cn(
+            "rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition-colors",
+            toolFilter
+              ? "bg-emerald-500/15 text-emerald-700 ring-emerald-500/30 dark:text-emerald-400"
+              : "bg-card text-muted-foreground ring-border hover:bg-accent",
+          )}
+        >
+          {t("models.toolCall")}
+        </button>
+        <button
+          type="button"
+          onClick={() => toggleFilter("structured")}
+          aria-pressed={structuredFilter}
+          className={cn(
+            "rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition-colors",
+            structuredFilter
+              ? "bg-emerald-500/15 text-emerald-700 ring-emerald-500/30 dark:text-emerald-400"
+              : "bg-card text-muted-foreground ring-border hover:bg-accent",
+          )}
+        >
+          {t("models.structured")}
+        </button>
+        <button
+          type="button"
+          onClick={() => toggleFilter("open")}
+          aria-pressed={openWeightsFilter}
+          className={cn(
+            "rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition-colors",
+            openWeightsFilter
+              ? "bg-emerald-500/15 text-emerald-700 ring-emerald-500/30 dark:text-emerald-400"
+              : "bg-card text-muted-foreground ring-border hover:bg-accent",
+          )}
+        >
+          {t("models.weights")}
+        </button>
+
+        {hasFilters && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            {t("models.clearFilters")}
           </button>
         )}
       </div>
