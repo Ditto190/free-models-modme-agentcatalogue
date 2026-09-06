@@ -78,7 +78,7 @@ export default async function ModelPage({
   };
 
   // 只内联可免费使用中转站的精简摘要，避免全量 catalog 序列化
-  const relays: RelayBrief[] = model.available_on
+  const relays: RelayBrief[] = (model.free_on ?? model.available_on)
     .map((rid) => catalog.api[rid])
     .filter((r) => !!r)
     .map(({ id, name, logo, free_quota }) => ({ id, name, logo, free_quota }));

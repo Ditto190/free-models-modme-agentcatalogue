@@ -238,7 +238,7 @@ export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrie
             yes={model.open_weights}
           />
           <Spec label={t("models.released")} value={model.release_date ?? "—"} />
-          <Spec label={t("models.availableOn")} value={String(model.available_on.length)} />
+          <Spec label={t("models.availableOn")} value={String((model.free_on ?? []).length)} />
         </CardContent>
       </Card>
 

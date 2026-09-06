@@ -4,10 +4,15 @@
 import { relays as rawRelays } from "@/data/relays";
 import { models as rawModels } from "@/data/models";
 import type { ApiJson, CatalogJson, ModelsJson, Relay } from "@/lib/types";
+import { relayModelIsFree } from "@/lib/free-quota";
 
 function buildCatalog(): CatalogJson {
   const availableMap = new Map<string, string[]>();
-  for (const m of rawModels) availableMap.set(m.id, []);
+  const freeMap = new Map<string, string[]>();
+  for (const m of rawModels) {
+    availableMap.set(m.id, []);
+    freeMap.set(m.id, []);
+  }
 
   const api: ApiJson = {};
   for (const relay of rawRelays) {
@@ -16,12 +21,17 @@ function buildCatalog(): CatalogJson {
     api[relay.id] = r;
     for (const modelId of Object.keys(relay.models)) {
       availableMap.get(modelId)?.push(relay.id);
+      if (relayModelIsFree(r, modelId)) freeMap.get(modelId)?.push(relay.id);
     }
   }
 
   const models: ModelsJson = {};
   for (const m of rawModels) {
-    models[m.id] = { ...m, available_on: availableMap.get(m.id) ?? [] };
+    models[m.id] = {
+      ...m,
+      available_on: availableMap.get(m.id) ?? [],
+      free_on: freeMap.get(m.id) ?? [],
+    };
   }
 
   return { api, models };

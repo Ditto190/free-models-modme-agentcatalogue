@@ -100,6 +100,8 @@ export interface Model {
   release_date?: string;
   /** 提供该模型的中转站 id 列表（由生成脚本自动计算填充） */
   available_on: string[];
+  /** 免费额度覆盖该模型的中转站 id 列表（构建期计算，源数据保持为空） */
+  free_on?: string[];
 }
 
 /** api.json 输出形状 */

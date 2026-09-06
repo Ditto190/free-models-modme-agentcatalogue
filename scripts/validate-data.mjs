@@ -244,6 +244,12 @@ for (const model of models) {
       `${model.id}: available_on 由构建期 src/lib/data.ts 自动计算，源数据中请保持空数组`,
     );
   }
+  if (model.free_on != null) {
+    check(
+      Array.isArray(model.free_on) && model.free_on.length === 0,
+      `${model.id}: free_on 由构建期 src/lib/data.ts 自动计算，源数据中请保持空数组`,
+    );
+  }
   if (model.release_date != null) {
     check(/^\d{4}-\d{2}(-\d{2})?$/.test(model.release_date), `${model.id}: release_date 应形如 "YYYY-MM" 或 "YYYY-MM-DD"`);
   }

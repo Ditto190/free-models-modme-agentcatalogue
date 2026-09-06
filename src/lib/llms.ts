@@ -37,7 +37,7 @@ export function generateLlms(catalog: CatalogJson): string {
   lines.push(`## 模型（${models.length}）`);
   lines.push("");
   for (const m of models) {
-    const on = m.available_on.join("、") || "暂无";
+    const on = (m.free_on ?? m.available_on).join("、") || "暂无";
     const price = m.price ? `$${m.price.input ?? "?"}/$${m.price.output ?? "?"}/1M` : "—";
     lines.push(
       `- [${m.name}](${zh(`/models/${m.id}`)}) — ${m.provider}，上下文 ${m.context ?? "?"}，价格 ${price}，免费中转站：${on}`,
@@ -86,7 +86,7 @@ export function generateLlmsFull(catalog: CatalogJson): string {
     if (m.price) {
       lines.push(`- 价格（$/1M tokens）：输入 $${m.price.input ?? "?"}，输出 $${m.price.output ?? "?"}`);
     }
-    lines.push(`- 可免费使用的中转站：${m.available_on.join(", ") || "暂无"}`);
+    lines.push(`- 可免费使用的中转站：${(m.free_on ?? m.available_on).join(", ") || "暂无"}`);
     lines.push("");
   }
   lines.push(`## 中转站（${relays.length}）`);

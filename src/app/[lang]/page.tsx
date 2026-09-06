@@ -19,7 +19,7 @@ export default async function HomePage({
   const relayCount = relays.length;
   const models = Object.values(catalog.models);
   const modelCount = models.length;
-  const freeModelCount = models.filter((m) => m.available_on.length > 0).length;
+  const freeModelCount = models.filter((m) => (m.free_on?.length ?? 0) > 0).length;
 
   // 列表行只用到少量字段，去掉嵌套 models 可显著减小页面 payload
   const relayCards: RelayCard[] = relays.map((r) => ({

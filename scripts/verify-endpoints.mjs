@@ -93,6 +93,17 @@ for (const [modelId, model] of modelEntries) {
       error(`models.json: ${modelId} 声称 ${relayId} 提供，但 api.json 中没有对应条目`);
     }
   }
+  if (Array.isArray(model.free_on)) {
+    for (const relayId of model.free_on) {
+      if (!model.available_on.includes(relayId)) {
+        error(`models.json: ${modelId} 的 free_on 包含 ${relayId}，但 available_on 未包含该中转站`);
+      }
+      const relay = api[relayId];
+      if (!relay || !relay.models?.[modelId]) {
+        error(`models.json: ${modelId} 声称 ${relayId} 免费可用，但 api.json 中没有对应条目`);
+      }
+    }
+  }
 
   // limit / cost 是 models.dev 兼容命名，必须与本站字段同步
   if (model.limit) {

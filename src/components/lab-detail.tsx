@@ -76,8 +76,9 @@ export function LabDetail({
           </div>
           <ul className="divide-y divide-border">
             {sorted.map((m) => {
-              const shown = m.available_on.slice(0, 3);
-              const extra = m.available_on.length - shown.length;
+              const freeOn = m.free_on ?? [];
+              const shown = freeOn.slice(0, 3);
+              const extra = freeOn.length - shown.length;
               return (
                 <li
                   key={m.id}
@@ -137,7 +138,7 @@ export function LabDetail({
                     )}
                   </div>
                   <div className="flex flex-wrap justify-start gap-1 md:justify-end">
-                    {m.available_on.length === 0 ? (
+                    {freeOn.length === 0 ? (
                       <span className="text-xs text-muted-foreground/70">{t("models.noChannels")}</span>
                     ) : (
                       <>
