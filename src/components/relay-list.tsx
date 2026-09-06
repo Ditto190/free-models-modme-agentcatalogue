@@ -17,6 +17,15 @@ import { localePath } from "@/lib/locale";
 
 const QUOTA_TYPES: FreeQuotaType[] = ["credit", "token", "daily_checkin", "free_models", "unlimited"];
 
+/** 返回中转站的额度类型（含 parts 分项），用于筛选与搜索 */
+function freeQuotaTypes(relay: RelayCard): FreeQuotaType[] {
+  const types = new Set<FreeQuotaType>();
+  const fq = relay.free_quota;
+  if (fq.type) types.add(fq.type as FreeQuotaType);
+  for (const part of fq.parts ?? []) types.add(part.type);
+  return [...types];
+}
+
 /** 中转站列表行：桌面为表格行，移动端为卡片 */
 function RelayRow({ relay }: { relay: RelayCard }) {
   const { t, locale } = useApp();
@@ -133,18 +142,22 @@ export function RelayList({ relays }: { relays: RelayCard[] }) {
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase();
     let list = relays.filter((relay) => {
-      if (typeFilter && relay.free_quota.type !== typeFilter) return false;
+      if (typeFilter && !freeQuotaTypes(relay).includes(typeFilter as FreeQuotaType)) return false;
       const regions: string[] = relay.region ?? [];
       if (regionFilter && !regions.includes(regionFilter)) return false;
       if (providerFilter && !relay.providers.includes(providerFilter)) return false;
       if (!term) return true;
       const notes = relay.free_quota.notes ?? relay.pricing.notes ?? "";
+      const parts = (relay.free_quota.parts ?? [])
+        .flatMap((part) => [part.amount ?? "", part.notes ?? ""])
+        .join(" ");
       const haystack = [
         relay.id,
         relay.name,
         relay.providers.join(" "),
         relay.free_quota.amount ?? "",
         notes,
+        parts,
       ]
         .join(" ")
         .toLowerCase();
