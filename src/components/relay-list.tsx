@@ -13,7 +13,7 @@ import type { DictKey } from "@/lib/i18n";
 
 /** 中转站列表行：桌面为表格行，移动端为卡片 */
 function RelayRow({ relay }: { relay: RelayCard }) {
-  const { t, locale } = useApp();
+  const { t } = useApp();
   const fq = relay.free_quota;
   const fType = fq.type as FreeQuotaType | undefined;
   const providers = relay.providers.slice(0, 3);
@@ -55,7 +55,7 @@ function RelayRow({ relay }: { relay: RelayCard }) {
             </Badge>
           )}
           <div className="text-sm font-semibold leading-snug text-foreground">
-            {fq.amount ?? (locale === "zh" ? "查看详情" : "See details")}
+            {fq.amount ?? t("card.viewDetail")}
           </div>
         </div>
       </div>

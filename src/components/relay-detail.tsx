@@ -13,7 +13,7 @@ import { FREE_VARIANT } from "@/lib/ui";
 import type { DictKey } from "@/lib/i18n";
 
 export function RelayDetail({ relay, models }: { relay: Relay; models: Record<string, Model> }) {
-  const { t, locale } = useApp();
+  const { t } = useApp();
   const fq = relay.free_quota;
   const fType = fq.type as FreeQuotaType | undefined;
   const modelCount = Object.keys(relay.models).length;
@@ -77,13 +77,13 @@ export function RelayDetail({ relay, models }: { relay: Relay; models: Record<st
               {fq.notes && <p className="text-sm text-muted-foreground">{fq.notes}</p>}
               {fq.expires && (
                 <p className="text-sm text-muted-foreground">
-                  {locale === "zh" ? "有效期至" : "Expires: "} {fq.expires}
+                  {t("detail.expires", { date: fq.expires })}
                 </p>
               )}
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">
-              {locale === "zh" ? "未提供免费额度" : "No free quota offered"}
+              {t("detail.noFreeQuota")}
             </p>
           )}
         </div>
@@ -156,7 +156,7 @@ function ModelRow({
   refModel: ModelRef;
   model?: Model;
 }) {
-  const { locale } = useApp();
+  const { t } = useApp();
   const price = refModel.cost ?? model?.price;
   return (
     <tr className="transition-colors hover:bg-accent/40">
@@ -196,7 +196,7 @@ function ModelRow({
         )}
       </td>
       <td className="px-4 py-2.5 text-xs text-muted-foreground">
-        {model?.available_on.length ?? 0} {locale === "zh" ? "家" : ""}
+        {t("detail.availableOnCount", { n: model?.available_on.length ?? 0 })}
       </td>
     </tr>
   );

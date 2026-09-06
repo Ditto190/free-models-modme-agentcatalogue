@@ -98,7 +98,7 @@ function specIcon(label: string): React.ReactNode {
 }
 
 export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrief[] }) {
-  const { t, locale } = useApp();
+  const { t } = useApp();
   const [copied, setCopied] = useState(false);
 
   const copyId = async () => {
@@ -188,7 +188,7 @@ export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrie
               ? `$${fmtPrice(model.price.input)} / $${fmtPrice(model.price.output)}`
               : "—"
           }
-          sub={model.price ? "input / output · 每百万 token" : undefined}
+          sub={model.price ? t("detail.pricePerMillion") : undefined}
           accent={!!model.price}
         />
       </section>
@@ -257,9 +257,7 @@ export function ModelDetail({ model, relays }: { model: Model; relays: RelayBrie
                       <span className="mt-0.5 block truncate text-xs text-muted-foreground">
                         {fq.available && fq.amount
                           ? fq.amount
-                          : locale === "zh"
-                            ? "查看详情"
-                            : "See details"}
+                          : t("card.viewDetail")}
                       </span>
                     </span>
                     {fq.available && fType && (

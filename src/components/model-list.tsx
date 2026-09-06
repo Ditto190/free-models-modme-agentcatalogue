@@ -71,7 +71,7 @@ export function ModelList({ models }: { models: Model[] }) {
           <button
             type="button"
             onClick={() => updateQuery("")}
-            aria-label="清除搜索"
+            aria-label={t("models.clearSearch")}
             className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <X className="h-4 w-4" />
