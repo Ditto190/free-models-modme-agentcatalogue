@@ -129,6 +129,28 @@ for (const relay of relays) {
         `${tag}: providers 中的 "${provider}" 没有对应 models.ts 模型规格（/labs/${provider} 会 404）。请先补模型规格，否则移除该值。`,
       );
     }
+    // 已列模型的 relay，providers 应与模型目录中的厂商一一对应，
+    // 否则列表筛选、厂商区展示与模型页会出现互相矛盾的信息。
+    const listedProviders = new Set();
+    for (const modelId of Object.keys(relay.models)) {
+      const model = modelById.get(modelId);
+      if (model) listedProviders.add(model.provider);
+    }
+    if (listedProviders.size > 0) {
+      const declared = new Set(relay.providers);
+      for (const provider of listedProviders) {
+        check(
+          declared.has(provider),
+          `${tag}: 提供了 ${provider} 的模型，但 providers 缺少 "${provider}"`,
+        );
+      }
+      for (const provider of declared) {
+        check(
+          listedProviders.has(provider),
+          `${tag}: providers 声明了 "${provider}"，但 relay.models 中没有对应模型，请补模型或移除声明`,
+        );
+      }
+    }
   }
 
   check(relay.models && typeof relay.models === "object", `${tag}: models 必须是对象`);
