@@ -27,6 +27,14 @@ function freeQuotaTypes(relay: RelayCard): FreeQuotaType[] {
   return [...types];
 }
 
+/** “免费额度最高”排序：无限制/免费模型高于一次性美元额度，无数据排最后 */
+function quotaSortScore(relay: RelayCard): number {
+  const type = relay.free_quota.type;
+  if (type === "unlimited") return Number.POSITIVE_INFINITY;
+  if (type === "free_models") return 1_000_000;
+  return relay.free_quota.amount_usd ?? -1;
+}
+
 /** 中转站列表行：桌面为表格行，移动端为卡片 */
 function RelayRow({ relay }: { relay: RelayCard }) {
   const { t, locale } = useApp();
@@ -167,7 +175,11 @@ export function RelayList({ relays }: { relays: RelayCard[] }) {
     });
 
     if (sortRaw === "amount") {
-      list = [...list].sort((a, b) => (b.free_quota.amount_usd ?? -1) - (a.free_quota.amount_usd ?? -1));
+      list = [...list].sort((a, b) => {
+        const scoreA = quotaSortScore(a);
+        const scoreB = quotaSortScore(b);
+        return scoreA === scoreB ? 0 : scoreA > scoreB ? -1 : 1;
+      });
     } else if (sortRaw === "models") {
       list = [...list].sort((a, b) => b.model_count - a.model_count);
     } else if (sortRaw === "name") {
