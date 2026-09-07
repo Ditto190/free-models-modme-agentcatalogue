@@ -14,7 +14,9 @@ function pickLocale(request: NextRequest): "zh" | "en" {
   return /(^|,)\s*en([-,;]|$)/i.test(accept) ? "en" : "zh";
 }
 
-export function proxy(request: NextRequest) {
+// Next.js 16 已将 middleware 改名为 proxy，默认 Node 运行时；
+// 但 EdgeOne Makers 的适配器仅支持旧 middleware（Edge 运行时），故保留此约定。
+export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   if (hasLocalePrefix(pathname)) return NextResponse.next();
 
