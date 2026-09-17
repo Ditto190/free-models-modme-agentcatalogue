@@ -1,6 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        // 首页固定跳 /zh。middleware（Vercel）与 next.config redirects 双保险：
+        // EdgeOne Makers 不识别 middleware 时，只要其适配器走 Next 路由即会命中本规则。
+        source: "/",
+        destination: "/zh",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {

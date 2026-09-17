@@ -23,7 +23,8 @@ export function middleware(input: any): Response | undefined {
     return makers ? makers.next() : undefined;
   }
 
-  const locale = pickLocale(
+  // 首页固定跳 /zh（不按 Cookie/Accept-Language 探测）；其余无前缀深路径保留语言探测
+  const locale = pathname === "/" ? "zh" : pickLocale(
     request.headers.get("cookie") ?? "",
     request.headers.get("accept-language") ?? "",
   );
